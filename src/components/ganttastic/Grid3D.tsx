@@ -13,7 +13,7 @@ const tasks = [
 const days = ["Día 1", "Día 2", "Día 3", "Día 4", "Día 5"];
 
 export default function Grid3D() {
-  // Estados: 0 = blanco, 1 = verde, 2 = rojo
+  // Estados: 0 = blanco, 1 = verde, 2 = rojo, 3 = cian
   const [grid, setGrid] = useState<number[][]>(
     tasks.map(() => days.map(() => 0))
   );
@@ -22,7 +22,7 @@ export default function Grid3D() {
     setGrid((prev) =>
       prev.map((r, i) =>
         r.map((cell, j) =>
-          i === row && j === col ? (cell + 1) % 3 : cell
+          i === row && j === col ? (cell + 1) % 4 : cell
         )
       )
     );
@@ -34,6 +34,8 @@ export default function Grid3D() {
         return "bg-green-500";
       case 2:
         return "bg-red-500";
+      case 3:
+        return "bg-cyan-500";
       default:
         return "bg-white";
     }
