@@ -1,5 +1,5 @@
-# Firebase Studio
+# Ganttastic
 
-This is a NextJS starter in Firebase Studio.
+This is a Next.js application called Ganttastic. It's an interactive Gantt chart for visualizing project timelines, with an AI-powered helper to assist with SharePoint integration.
 
-To get started, take a look at src/app/page.tsx.
+To get started, run `npm run dev` and open http://localhost:9002 in your browser.
