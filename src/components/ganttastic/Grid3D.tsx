@@ -110,25 +110,22 @@ export default function Grid3D() {
                 <td className="px-4 py-2 border font-medium bg-gray-50">
                   {task}
                 </td>
-                {days.map((_, colIndex) => (
-                  <td key={colIndex} className="px-2 py-2 border">
-                    <div
+                {days.map((_, colIndex) => {
+                  const locationNumber = rowIndex * days.length + colIndex + 1;
+                  return (
+                    <td
+                      key={colIndex}
                       onClick={() => handleClick(rowIndex, colIndex)}
                       className={cn(
-                        "w-12 h-12 cursor-pointer rounded-lg transition-all",
+                        "px-2 py-2 border h-14 w-14 cursor-pointer text-center font-bold",
                         getColor(grid[rowIndex][colIndex])
                       )}
-                      style={{
-                        boxShadow: `
-                          0px 6px 0px rgba(0,0,0,0.25),
-                          3px 6px 10px rgba(0,0,0,0.35)
-                        `,
-                        marginBottom: "6px",
-                        border: "1px solid #ccc",
-                      }}
-                    />
-                  </td>
-                ))}
+                      title={`${task} - ${days[colIndex]}`}
+                    >
+                      {locationNumber}
+                    </td>
+                  );
+                })}
               </tr>
             ))}
           </tbody>
