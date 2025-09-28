@@ -30,7 +30,7 @@ const generateWorkingDays = (startDate: Date, count: number): string[] => {
 };
 
 
-const days = generateWorkingDays(new Date(2025, 8, 8), 20); // 8 de Septiembre
+const days = generateWorkingDays(new Date(2025, 8, 8), 40); // 8 de Septiembre
 const startDays = [1, 3, 6, 9, 12, 16]; // Días de inicio para cada tarea
 
 // Grilla proyectada con inicios diferidos y estado "Completado"
