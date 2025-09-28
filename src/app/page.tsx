@@ -11,7 +11,7 @@ const tasks = [
   "enfierradura",
   "moldaje",
   "hormigón",
-  "Ventas",
+  "Ventanas",
   "Cubierta",
 ];
 const days = Array.from({ length: 20 }, (_, i) => `D${i + 1}`);

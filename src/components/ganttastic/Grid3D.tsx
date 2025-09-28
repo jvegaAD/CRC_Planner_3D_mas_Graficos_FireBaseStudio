@@ -20,7 +20,7 @@ const tasks = [
   "enfierradura",
   "moldaje",
   "hormigón",
-  "Ventas",
+  "Ventanas",
   "Cubierta",
 ];
 
@@ -185,6 +185,33 @@ export default function Grid3D({ initialGrid, referenceGrid }: { initialGrid?: n
       </div>
 
       <div className="flex flex-wrap gap-8 justify-center">
+        {/* 📈 Nuevo: Línea acumulada por tarea */}
+        <div className="bg-white p-4 rounded-lg shadow-md flex-1 min-w-[400px]">
+          <h2 className="text-lg font-semibold mb-4">
+            📈 Acumulado Semanal por Tarea
+          </h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={weeklyTaskAccumulatedData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="week" angle={-90} textAnchor="end" height={70} interval={0} tick={{ fontSize: 10 }} />
+              <YAxis allowDecimals={false} />
+              <Tooltip />
+              <Legend />
+              {tasks.map((task, index) => (
+                <Line
+                  key={task}
+                  type="monotone"
+                  dataKey={task}
+                  stroke={lineColors[index % lineColors.length]}
+                  strokeWidth={2}
+                  name={task}
+                  dot={{ r: 4 }}
+                />
+              ))}
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+
         {/* 📊 Barras apiladas */}
         <div className="bg-white p-4 rounded-lg shadow-md flex-1 min-w-[400px]">
           <h2 className="text-lg font-semibold mb-4">
@@ -260,33 +287,6 @@ export default function Grid3D({ initialGrid, referenceGrid }: { initialGrid?: n
               <Bar dataKey="atrasado" stackId="a" fill="#ef4444" name="Atrasado" />
               <Bar dataKey="completado" stackId="a" fill="#06b6d4" name="Completado" />
             </BarChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* 📈 Nuevo: Línea acumulada por tarea */}
-        <div className="bg-white p-4 rounded-lg shadow-md flex-1 min-w-[400px]">
-          <h2 className="text-lg font-semibold mb-4">
-            📈 Acumulado Semanal por Tarea
-          </h2>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={weeklyTaskAccumulatedData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="week" angle={-90} textAnchor="end" height={70} interval={0} tick={{ fontSize: 10 }} />
-              <YAxis allowDecimals={false} />
-              <Tooltip />
-              <Legend />
-              {tasks.map((task, index) => (
-                <Line
-                  key={task}
-                  type="monotone"
-                  dataKey={task}
-                  stroke={lineColors[index % lineColors.length]}
-                  strokeWidth={2}
-                  name={task}
-                  dot={{ r: 4 }}
-                />
-              ))}
-            </LineChart>
           </ResponsiveContainer>
         </div>
       </div>
