@@ -305,6 +305,7 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
                   name={isProgramadaView ? `${task} (Completado)` : task}
                   dot={{ r: 4 }}
                   connectNulls
+                  strokeDasharray={isProgramadaView ? undefined : "8 4"}
                 />
               ))}
                {isProgramadaView && tasks.map((task, index) => (
@@ -376,9 +377,10 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
                 dataKey="completed"
                 stroke="#00008B" // azul oscuro
                 strokeWidth={3}
-                name="Progreso Real Completado"
+                name={isProgramadaView ? "Progreso Real Completado" : "Progreso Proyectado"}
                 dot={{ r: 5 }}
                 connectNulls
+                strokeDasharray={isProgramadaView ? undefined : "8 4"}
               />
             </ComposedChart>
           </ResponsiveContainer>
