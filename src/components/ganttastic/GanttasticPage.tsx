@@ -21,13 +21,13 @@ const GanttasticPage = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-background font-body text-foreground">
+    <div className="min-h-screen w-full bg-gray-100 font-body text-foreground">
       <div className="container mx-auto px-4 py-8">
         <header className="mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-4xl font-bold font-headline text-foreground/90">Ganttastic</h1>
+            <h1 className="text-4xl font-bold font-headline text-foreground/90">📊 Planner 3D Interactivo</h1>
             <p className="mt-2 text-muted-foreground">
-              An interactive Gantt chart to visualize your project timeline.
+              Visualiza el cronograma de tu proyecto con una vista 3D interactiva.
             </p>
           </div>
           <SharePointIntegrationHelper />
@@ -44,7 +44,7 @@ const GanttasticPage = () => {
         </main>
         
         <footer className="mt-8 text-center text-sm text-muted-foreground">
-          <p>Click on any cell to cycle through task statuses.</p>
+          <p>Haz clic en cualquier celda para cambiar el estado de la tarea.</p>
         </footer>
       </div>
     </div>
