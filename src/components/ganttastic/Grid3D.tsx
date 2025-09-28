@@ -86,6 +86,16 @@ export default function Grid3D({ initialGrid, referenceGrid, days = defaultDays 
     };
   });
 
+  // 📊 Dataset para la "Curva S"
+  let runningTotal = 0;
+  const sCurveData = weeklyData.map(week => {
+    runningTotal += week.total;
+    return {
+      week: week.week,
+      acumulado: runningTotal
+    };
+  });
+
   // 📊 Dataset por tarea (horizontal)
   const taskData = tasks.map((task, rowIndex) => {
     let verde = 0, rojo = 0, celeste = 0;
@@ -187,7 +197,7 @@ export default function Grid3D({ initialGrid, referenceGrid, days = defaultDays 
       </div>
 
       <div className="flex flex-wrap gap-8 justify-center">
-        {/* 📈 Nuevo: Línea acumulada por tarea */}
+        {/* 📈 Línea acumulada por tarea */}
         <div className="bg-white p-4 rounded-lg shadow-md flex-1 min-w-[400px]">
           <h2 className="text-lg font-semibold mb-4">
             📈 Acumulado Semanal por Tarea
@@ -210,6 +220,30 @@ export default function Grid3D({ initialGrid, referenceGrid, days = defaultDays 
                   dot={{ r: 4 }}
                 />
               ))}
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* 📈 Curva S */}
+        <div className="bg-white p-4 rounded-lg shadow-md flex-1 min-w-[400px]">
+          <h2 className="text-lg font-semibold mb-4">
+            📈 Curva "S" - Acumulado General del Proyecto
+          </h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={sCurveData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="week" angle={-90} textAnchor="end" height={70} interval={0} tick={{ fontSize: 10 }} />
+              <YAxis allowDecimals={false} />
+              <Tooltip />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="acumulado"
+                stroke="#ff7300"
+                strokeWidth={3}
+                name="Progreso Acumulado"
+                dot={{ r: 5 }}
+              />
             </LineChart>
           </ResponsiveContainer>
         </div>
