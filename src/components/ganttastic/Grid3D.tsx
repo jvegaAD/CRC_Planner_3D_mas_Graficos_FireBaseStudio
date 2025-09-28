@@ -102,57 +102,98 @@ export default function Grid3D({ initialGrid, referenceGrid, days = defaultDays,
   const totalProjectWorkUnits = gridForNumbering.flat().filter(status => status > 0).length;
   const totalTaskWorkUnits = gridForNumbering.map(row => row.filter(status => status > 0).length);
 
-
-  // 📊 Dataset para la "Curva S" en %
-  let runningTotal = 0;
-  let sCurveData = weeks.map((weekName, weekIndex) => {
-    const startDay = weekIndex * daysPerWeek;
-    const endDay = Math.min(startDay + daysPerWeek, days.length);
-    let weeklyTotal = 0;
-    
-    for (let dayIndex = startDay; dayIndex < endDay; dayIndex++) {
-        for (let taskIndex = 0; taskIndex < tasks.length; taskIndex++) {
-            if (grid[taskIndex][dayIndex] > 0) {
-                weeklyTotal++;
-            }
-        }
-    }
-    runningTotal += weeklyTotal;
-    const percentage = totalProjectWorkUnits > 0 ? (runningTotal / totalProjectWorkUnits) * 100 : 0;
-    return {
-      week: weekName,
-      acumulado: parseFloat(percentage.toFixed(1))
-    };
-  });
-
-
-  // 📊 Dataset para el gráfico de líneas acumulado por tarea en %
-  let weeklyTaskAccumulatedData = weeks.map((weekName, weekIndex) => {
-    const weekEntry: { [key: string]: any } = { week: weekName };
-
-    tasks.forEach((task, taskIndex) => {
-      let accumulatedValue = 0;
-      for (let w = 0; w <= weekIndex; w++) {
-        const startDay = w * daysPerWeek;
-        const endDay = Math.min(startDay + daysPerWeek, days.length);
-        for (let dayIndex = startDay; dayIndex < endDay; dayIndex++) {
-          if (grid[taskIndex][dayIndex] > 0) {
-            accumulatedValue++;
+  // --- CÁLCULO DE DATOS PARA GRÁFICOS ---
+  const calculateChartData = (targetGrid: number[][]) => {
+      let runningTotal = 0;
+      const sCurve = weeks.map((weekName, weekIndex) => {
+          const startDay = weekIndex * daysPerWeek;
+          const endDay = Math.min(startDay + daysPerWeek, days.length);
+          let weeklyTotal = 0;
+          for (let dayIndex = startDay; dayIndex < endDay; dayIndex++) {
+              for (let taskIndex = 0; taskIndex < tasks.length; taskIndex++) {
+                  if (targetGrid[taskIndex][dayIndex] > 0) {
+                      weeklyTotal++;
+                  }
+              }
           }
-        }
-      }
-      const totalUnitsForTask = totalTaskWorkUnits[taskIndex];
-      const percentage = totalUnitsForTask > 0 ? (accumulatedValue / totalUnitsForTask) * 100 : 0;
-      weekEntry[task] = parseFloat(percentage.toFixed(1));
-    });
-    return weekEntry;
+          runningTotal += weeklyTotal;
+          const percentage = totalProjectWorkUnits > 0 ? (runningTotal / totalProjectWorkUnits) * 100 : 0;
+          return {
+              week: weekName,
+              value: parseFloat(percentage.toFixed(1))
+          };
+      });
+
+      const taskAccumulated = weeks.map((weekName, weekIndex) => {
+          const weekEntry: { [key: string]: any } = { week: weekName };
+          tasks.forEach((task, taskIndex) => {
+              let accumulatedValue = 0;
+              for (let w = 0; w <= weekIndex; w++) {
+                  const startDay = w * daysPerWeek;
+                  const endDay = Math.min(startDay + daysPerWeek, days.length);
+                  for (let dayIndex = startDay; dayIndex < endDay; dayIndex++) {
+                      if (targetGrid[taskIndex][dayIndex] > 0) {
+                          accumulatedValue++;
+                      }
+                  }
+              }
+              const totalUnitsForTask = totalTaskWorkUnits[taskIndex];
+              const percentage = totalUnitsForTask > 0 ? (accumulatedValue / totalUnitsForTask) * 100 : 0;
+              weekEntry[task] = parseFloat(percentage.toFixed(1));
+          });
+          return weekEntry;
+      });
+
+      return { sCurve, taskAccumulated };
+  };
+
+  // Datos reales (programados)
+  const { sCurve: actualSCurve, taskAccumulated: actualTaskAccumulated } = calculateChartData(grid);
+
+  // Datos proyectados (si existen)
+  const { sCurve: projectedSCurve, taskAccumulated: projectedTaskAccumulated } = isProgramadaView ? calculateChartData(referenceGrid!) : { sCurve: [], taskAccumulated: [] };
+
+  // Combina los datos para los gráficos
+  let combinedSCurveData = actualSCurve.map((d, i) => ({
+      ...d,
+      acumulado: d.value,
+      proyectado: projectedSCurve[i]?.value,
+  }));
+
+  let combinedTaskAccumulatedData = actualTaskAccumulated.map((d, i) => {
+      const combinedEntry: { [key: string]: any } = { week: d.week };
+      tasks.forEach(task => {
+          combinedEntry[task] = d[task];
+          combinedEntry[`${task} (Proy.)`] = projectedTaskAccumulated[i]?.[task];
+      });
+      return combinedEntry;
   });
 
-  // Si es la vista "Programada" y hay una fecha de control, corta los datos de los gráficos de línea
+  // Si es la vista "Programada" y hay una fecha de control, ajusta los datos
   if (isProgramadaView && controlWeekIndex !== -1) {
-    sCurveData = sCurveData.slice(0, controlWeekIndex + 1);
-    weeklyTaskAccumulatedData = weeklyTaskAccumulatedData.slice(0, controlWeekIndex + 1);
+      const displayUntilWeekIndex = Math.min(controlWeekIndex + 3, weeks.length - 1);
+      
+      // Corta los datos reales hasta la semana de control
+      combinedSCurveData = combinedSCurveData.slice(0, controlWeekIndex + 1);
+      combinedTaskAccumulatedData = combinedTaskAccumulatedData.slice(0, controlWeekIndex + 1);
+      
+      // Añade los datos proyectados hasta 3 semanas después
+      for (let i = controlWeekIndex + 1; i <= displayUntilWeekIndex; i++) {
+          combinedSCurveData.push({
+              week: weeks[i],
+              acumulado: null, // No hay datos reales
+              proyectado: projectedSCurve[i]?.value,
+          });
+
+          const taskEntry: { [key: string]: any } = { week: weeks[i] };
+          tasks.forEach(task => {
+              taskEntry[task] = null; // No hay datos reales
+              taskEntry[`${task} (Proy.)`] = projectedTaskAccumulated[i]?.[task];
+          });
+          combinedTaskAccumulatedData.push(taskEntry);
+      }
   }
+
 
   // 📊 Dataset por tarea (horizontal)
   const taskData = tasks.map((task, rowIndex) => {
@@ -243,7 +284,7 @@ export default function Grid3D({ initialGrid, referenceGrid, days = defaultDays,
             📈 % Acumulado Semanal por Tarea
           </h2>
           <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={weeklyTaskAccumulatedData}>
+            <LineChart data={combinedTaskAccumulatedData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="week" angle={-90} textAnchor="end" height={70} interval={0} tick={{ fontSize: 10 }} />
               <YAxis domain={[0, 100]} tickFormatter={percentageFormatter}>
@@ -260,6 +301,20 @@ export default function Grid3D({ initialGrid, referenceGrid, days = defaultDays,
                   strokeWidth={2}
                   name={task}
                   dot={{ r: 4 }}
+                  connectNulls
+                />
+              ))}
+              {isProgramadaView && tasks.map((task, index) => (
+                <Line
+                  key={`${task}-proy`}
+                  type="monotone"
+                  dataKey={`${task} (Proy.)`}
+                  stroke={lineColors[index % lineColors.length]}
+                  strokeWidth={2}
+                  name={`${task} (Proy.)`}
+                  strokeDasharray="3 3"
+                  dot={{ r: 4 }}
+                  connectNulls
                 />
               ))}
             </LineChart>
@@ -272,7 +327,7 @@ export default function Grid3D({ initialGrid, referenceGrid, days = defaultDays,
             📈 Curva "S" - % Acumulado General del Proyecto
           </h2>
           <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={sCurveData}>
+            <LineChart data={combinedSCurveData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="week" angle={-90} textAnchor="end" height={70} interval={0} tick={{ fontSize: 10 }} />
               <YAxis domain={[0, 100]} tickFormatter={percentageFormatter}>
@@ -287,7 +342,18 @@ export default function Grid3D({ initialGrid, referenceGrid, days = defaultDays,
                 strokeWidth={3}
                 name="Progreso Acumulado"
                 dot={{ r: 5 }}
+                connectNulls
               />
+               {isProgramadaView && <Line
+                type="monotone"
+                dataKey="proyectado"
+                stroke="#8884d8"
+                strokeWidth={2}
+                name="Progreso Proyectado"
+                strokeDasharray="3 3"
+                dot={{ r: 5 }}
+                connectNulls
+              />}
             </LineChart>
           </ResponsiveContainer>
         </div>
