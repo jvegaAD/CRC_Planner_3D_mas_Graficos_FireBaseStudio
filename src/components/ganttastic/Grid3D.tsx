@@ -28,6 +28,10 @@ const days = Array.from({ length: 20 }, (_, i) => `D${i + 1}`);
 const daysPerWeek = 4;
 const weeks = Array.from({ length: days.length / daysPerWeek }, (_, i) => `Semana ${i + 1}`);
 
+// Colores para las líneas del nuevo gráfico
+const lineColors = ["#8884d8", "#82ca9d", "#ffc658", "#ff8042", "#0088FE", "#00C49F"];
+
+
 // Blanco = 0, Verde = 1, Rojo = 2, Celeste = 3
 export default function Grid3D({ initialGrid, referenceGrid }: { initialGrid?: number[][], referenceGrid?: number[][] }) {
   const [grid, setGrid] = useState<number[][]>(
@@ -89,6 +93,25 @@ export default function Grid3D({ initialGrid, referenceGrid }: { initialGrid?: n
       if (grid[rowIndex][colIndex] === 3) celeste++;
     });
     return { tarea: task, programado: verde, atrasado: rojo, completado: celeste };
+  });
+
+  // 📊 Nuevo: Dataset para el gráfico de líneas acumulado por tarea
+  const weeklyTaskAccumulatedData = weeks.map((weekName, weekIndex) => {
+    const weekEntry: { [key: string]: any } = { week: weekName };
+    tasks.forEach((task, taskIndex) => {
+      let accumulatedValue = 0;
+      for (let w = 0; w <= weekIndex; w++) {
+        const startDay = w * daysPerWeek;
+        const endDay = startDay + daysPerWeek;
+        for (let dayIndex = startDay; dayIndex < endDay; dayIndex++) {
+          if (grid[taskIndex][dayIndex] > 0) { // Contar cualquier estado que no sea "Sin programar"
+            accumulatedValue++;
+          }
+        }
+      }
+      weekEntry[task] = accumulatedValue;
+    });
+    return weekEntry;
   });
   
   const gridForNumbering = referenceGrid || grid;
@@ -237,6 +260,33 @@ export default function Grid3D({ initialGrid, referenceGrid }: { initialGrid?: n
               <Bar dataKey="atrasado" stackId="a" fill="#ef4444" name="Atrasado" />
               <Bar dataKey="completado" stackId="a" fill="#06b6d4" name="Completado" />
             </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* 📈 Nuevo: Línea acumulada por tarea */}
+        <div className="bg-white p-4 rounded-lg shadow-md flex-1 min-w-[400px]">
+          <h2 className="text-lg font-semibold mb-4">
+            📈 Acumulado Semanal por Tarea
+          </h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={weeklyTaskAccumulatedData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="week" angle={-90} textAnchor="end" height={70} interval={0} tick={{ fontSize: 10 }} />
+              <YAxis allowDecimals={false} />
+              <Tooltip />
+              <Legend />
+              {tasks.map((task, index) => (
+                <Line
+                  key={task}
+                  type="monotone"
+                  dataKey={task}
+                  stroke={lineColors[index % lineColors.length]}
+                  strokeWidth={2}
+                  name={task}
+                  dot={{ r: 4 }}
+                />
+              ))}
+            </LineChart>
           </ResponsiveContainer>
         </div>
       </div>
