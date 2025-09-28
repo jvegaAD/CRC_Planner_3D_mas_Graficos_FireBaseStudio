@@ -16,11 +16,12 @@ import {
 } from "recharts";
 
 const tasks = [
-  "Fundaciones",
-  "Hormigón",
-  "Albañilería",
-  "Aislamiento",
-  "Instalaciones",
+  "Losa Fundación",
+  "enfierradura",
+  "moldaje",
+  "hormigón",
+  "Ventas",
+  "Cubierta",
 ];
 
 const days = Array.from({ length: 20 }, (_, i) => `D${i + 1}`);
