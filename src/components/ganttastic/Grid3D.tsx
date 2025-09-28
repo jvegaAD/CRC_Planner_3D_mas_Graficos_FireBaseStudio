@@ -24,19 +24,21 @@ const tasks = [
   "Cubierta",
 ];
 
-const days = Array.from({ length: 20 }, (_, i) => `D${i + 1}`);
-const daysPerWeek = 4;
-const weeks = Array.from({ length: days.length / daysPerWeek }, (_, i) => `Semana ${i + 1}`);
+const defaultDays = Array.from({ length: 20 }, (_, i) => `D${i + 1}`);
+const daysPerWeek = 5;
+
 
 // Colores para las líneas del nuevo gráfico
 const lineColors = ["#8884d8", "#82ca9d", "#ffc658", "#ff8042", "#0088FE", "#00C49F"];
 
 
 // Blanco = 0, Verde = 1, Rojo = 2, Celeste = 3
-export default function Grid3D({ initialGrid, referenceGrid }: { initialGrid?: number[][], referenceGrid?: number[][] }) {
+export default function Grid3D({ initialGrid, referenceGrid, days = defaultDays }: { initialGrid?: number[][], referenceGrid?: number[][], days?: string[] }) {
   const [grid, setGrid] = useState<number[][]>(
     initialGrid || tasks.map(() => days.map(() => 0))
   );
+
+  const weeks = Array.from({ length: Math.ceil(days.length / daysPerWeek) }, (_, i) => `Semana ${i + 1}`);
 
   const handleClick = (row: number, col: number) => {
     setGrid((prev) =>
@@ -65,7 +67,7 @@ export default function Grid3D({ initialGrid, referenceGrid }: { initialGrid?: n
   const weeklyData = weeks.map((_, weekIndex) => {
     let verde = 0, rojo = 0, celeste = 0;
     const startDay = weekIndex * daysPerWeek;
-    const endDay = startDay + daysPerWeek;
+    const endDay = Math.min(startDay + daysPerWeek, days.length);
     
     for (let colIndex = startDay; colIndex < endDay; colIndex++) {
       tasks.forEach((_, rowIndex) => {
@@ -102,7 +104,7 @@ export default function Grid3D({ initialGrid, referenceGrid }: { initialGrid?: n
       let accumulatedValue = 0;
       for (let w = 0; w <= weekIndex; w++) {
         const startDay = w * daysPerWeek;
-        const endDay = startDay + daysPerWeek;
+        const endDay = Math.min(startDay + daysPerWeek, days.length);
         for (let dayIndex = startDay; dayIndex < endDay; dayIndex++) {
           if (grid[taskIndex][dayIndex] > 0) { // Contar cualquier estado que no sea "Sin programar"
             accumulatedValue++;
@@ -125,14 +127,14 @@ export default function Grid3D({ initialGrid, referenceGrid }: { initialGrid?: n
             <tr>
               <th rowSpan={2} className="px-4 py-2 border bg-gray-200 align-bottom">Actividad</th>
               {weeks.map((week, weekIndex) => (
-                <th key={weekIndex} colSpan={daysPerWeek} className="px-4 py-2 border bg-gray-100 text-center">
+                <th key={weekIndex} colSpan={Math.min(daysPerWeek, days.length - (weekIndex * daysPerWeek))} className="px-4 py-2 border bg-gray-100 text-center">
                   {week}
                 </th>
               ))}
             </tr>
             <tr>
               {days.map((day, index) => (
-                <th key={index} className="px-4 py-2 border bg-gray-50 font-normal">
+                <th key={index} className="px-4 py-2 border bg-gray-50 font-normal text-xs">
                   {day}
                 </th>
               ))}

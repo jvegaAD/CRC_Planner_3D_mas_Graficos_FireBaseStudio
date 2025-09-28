@@ -5,6 +5,7 @@ import Grid3D from "@/components/ganttastic/Grid3D";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { SharePointIntegrationHelper } from "@/components/ganttastic/SharePointIntegrationHelper";
+import { addDays, isSaturday, isSunday, format } from 'date-fns';
 
 const tasks = [
   "Losa Fundación",
@@ -14,7 +15,22 @@ const tasks = [
   "Ventanas",
   "Cubierta",
 ];
-const days = Array.from({ length: 20 }, (_, i) => `D${i + 1}`);
+
+// Función para generar las fechas de los días laborables
+const generateWorkingDays = (startDate: Date, count: number): string[] => {
+  const days: string[] = [];
+  let currentDate = startDate;
+  while (days.length < count) {
+    if (!isSaturday(currentDate) && !isSunday(currentDate)) {
+      days.push(format(currentDate, 'd/M'));
+    }
+    currentDate = addDays(currentDate, 1);
+  }
+  return days;
+};
+
+
+const days = generateWorkingDays(new Date(2024, 8, 8), 20); // 8 de Septiembre
 const startDays = [1, 3, 6, 9, 12, 16]; // Días de inicio para cada tarea
 
 // Grilla proyectada con inicios diferidos y estado "Completado"
@@ -58,12 +74,12 @@ export default function Home() {
 
         <div className={cn(view !== "proyectada" && "hidden")}>
            <h2 className="text-2xl font-bold mb-6 text-center">📊 Programa General Proyectado</h2>
-           <Grid3D initialGrid={projectedGrid} />
+           <Grid3D initialGrid={projectedGrid} days={days} />
         </div>
 
         <div className={cn(view !== "semanal" && "hidden")}>
            <h2 className="text-2xl font-bold mb-6 text-center">📊 Programa General Semanal</h2>
-           <Grid3D initialGrid={weeklyGrid} referenceGrid={projectedGrid} />
+           <Grid3D initialGrid={weeklyGrid} referenceGrid={projectedGrid} days={days} />
         </div>
 
       </div>
