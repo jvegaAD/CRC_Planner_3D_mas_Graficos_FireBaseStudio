@@ -10,6 +10,8 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  LineChart,
+  Line,
 } from "recharts";
 
 const tasks = [
@@ -51,26 +53,37 @@ export default function Grid3D() {
     }
   };
 
-  // Calcular acumulado por día con desglose por color
+  // 📊 Dataset por día (apiladas + acumulado)
   const barData = days.map((_, colIndex) => {
-    let verde = 0;
-    let rojo = 0;
-    let celeste = 0;
+    let verde = 0, rojo = 0, celeste = 0;
     tasks.forEach((_, rowIndex) => {
-      if (grid[rowIndex][colIndex] === 1) verde += 1;
-      if (grid[rowIndex][colIndex] === 2) rojo += 1;
-      if (grid[rowIndex][colIndex] === 3) celeste += 1;
+      if (grid[rowIndex][colIndex] === 1) verde++;
+      if (grid[rowIndex][colIndex] === 2) rojo++;
+      if (grid[rowIndex][colIndex] === 3) celeste++;
     });
     return {
       day: `D${colIndex + 1}`,
       programado: verde,
       atrasado: rojo,
       completado: celeste,
+      total: verde + rojo + celeste,
     };
   });
 
+  // 📊 Dataset por tarea (horizontal)
+  const taskData = tasks.map((task, rowIndex) => {
+    let verde = 0, rojo = 0, celeste = 0;
+    days.forEach((_, colIndex) => {
+      if (grid[rowIndex][colIndex] === 1) verde++;
+      if (grid[rowIndex][colIndex] === 2) rojo++;
+      if (grid[rowIndex][colIndex] === 3) celeste++;
+    });
+    return { tarea: task, programado: verde, atrasado: rojo, completado: celeste };
+  });
+
   return (
-    <div className="w-full">
+    <div className="w-full space-y-10">
+      {/* 🔲 Cuadrícula */}
       <div className="overflow-x-auto">
         <table className="border-collapse">
           <thead>
@@ -114,8 +127,8 @@ export default function Grid3D() {
         </table>
       </div>
 
-      {/* 📊 Gráfico acumulado por color */}
-      <div className="mt-10 bg-white p-4 rounded-lg shadow-md">
+      {/* 📊 Barras apiladas */}
+      <div className="bg-white p-4 rounded-lg shadow-md">
         <h2 className="text-lg font-semibold mb-4">
           📊 Estado de Actividades por Día
         </h2>
@@ -124,6 +137,42 @@ export default function Grid3D() {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="day" />
             <YAxis allowDecimals={false} />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="programado" stackId="a" fill="#22c55e" name="Programado" />
+            <Bar dataKey="atrasado" stackId="a" fill="#ef4444" name="Atrasado" />
+            <Bar dataKey="completado" stackId="a" fill="#06b6d4" name="Completado" />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* 📈 Línea acumulada */}
+      <div className="bg-white p-4 rounded-lg shadow-md">
+        <h2 className="text-lg font-semibold mb-4">
+          📈 Acumulado Total por Día
+        </h2>
+        <ResponsiveContainer width="100%" height={250}>
+          <LineChart data={barData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="day" />
+            <YAxis allowDecimals={false} />
+            <Tooltip />
+            <Legend />
+            <Line type="monotone" dataKey="total" stroke="#3b82f6" strokeWidth={3} name="Total" />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* 📊 Barras horizontales por tarea */}
+      <div className="bg-white p-4 rounded-lg shadow-md">
+        <h2 className="text-lg font-semibold mb-4">
+          📊 Estado por Tarea
+        </h2>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart layout="vertical" data={taskData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis type="number" allowDecimals={false} />
+            <YAxis type="category" dataKey="tarea" width={100} />
             <Tooltip />
             <Legend />
             <Bar dataKey="programado" stackId="a" fill="#22c55e" name="Programado" />
