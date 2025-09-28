@@ -34,12 +34,14 @@ const lineColors = ["#8884d8", "#82ca9d", "#ffc658", "#ff8042", "#0088FE", "#00C
 
 
 // Blanco = 0, Verde = 1, Rojo = 2, Celeste = 3
-export default function Grid3D({ initialGrid, referenceGrid, days = defaultDays }: { initialGrid?: number[][], referenceGrid?: number[][], days?: string[] }) {
+export default function Grid3D({ initialGrid, referenceGrid, days = defaultDays, controlDate }: { initialGrid?: number[][], referenceGrid?: number[][], days?: string[], controlDate?: string }) {
   const [grid, setGrid] = useState<number[][]>(
     initialGrid || tasks.map(() => days.map(() => 0))
   );
 
   const weeks = Array.from({ length: Math.ceil(days.length / daysPerWeek) }, (_, i) => `Semana ${i + 1}`);
+  const controlDateIndex = controlDate ? days.indexOf(controlDate) : -1;
+
 
   const handleClick = (row: number, col: number) => {
     setGrid((prev) =>
@@ -168,7 +170,7 @@ export default function Grid3D({ initialGrid, referenceGrid, days = defaultDays 
             </tr>
             <tr>
               {days.map((day, index) => (
-                <th key={index} className="px-4 py-2 border bg-gray-50 font-normal text-xs">
+                <th key={index} className={cn("px-4 py-2 border bg-gray-50 font-normal text-xs", controlDateIndex === index && 'bg-yellow-200')}>
                   {day}
                 </th>
               ))}
@@ -192,7 +194,7 @@ export default function Grid3D({ initialGrid, referenceGrid, days = defaultDays 
                   }
 
                   return (
-                    <td key={colIndex} className="px-2 py-2 border">
+                    <td key={colIndex} className={cn("px-2 py-2 border", controlDateIndex === colIndex && 'bg-yellow-100/70')}>
                       <div
                         onClick={() => handleClick(rowIndex, colIndex)}
                         className={cn(
@@ -357,5 +359,3 @@ export default function Grid3D({ initialGrid, referenceGrid, days = defaultDays 
     </div>
   );
 }
-
-    

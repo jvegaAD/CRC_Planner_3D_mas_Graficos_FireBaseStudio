@@ -33,6 +33,7 @@ const generateWorkingDays = (startDate: Date, count: number): string[] => {
 const days = generateWorkingDays(new Date(2025, 8, 8), 35); // 8 de Septiembre, 35 días = 7 semanas
 const startDays = [1, 3, 6, 9, 12, 16]; // Días de inicio para cada tarea
 const taskDuration = 20; // Cada tarea dura 20 días laborables
+const controlDate = "26/9"; // Fecha de control
 
 // Grilla proyectada con duraciones fijas
 const projectedGrid = tasks.map((_, rowIndex) => {
@@ -77,12 +78,12 @@ export default function Home() {
 
         <div className={cn(view !== "proyectada" && "hidden")}>
            <h2 className="text-2xl font-bold mb-6 text-center">📊 Programa General Proyectado</h2>
-           <Grid3D initialGrid={projectedGrid} days={days} />
+           <Grid3D initialGrid={projectedGrid} days={days} controlDate={controlDate} />
         </div>
 
         <div className={cn(view !== "semanal" && "hidden")}>
            <h2 className="text-2xl font-bold mb-6 text-center">📊 Programa General Semanal</h2>
-           <Grid3D initialGrid={weeklyGrid} referenceGrid={projectedGrid} days={days} />
+           <Grid3D initialGrid={weeklyGrid} referenceGrid={projectedGrid} days={days} controlDate={controlDate} />
         </div>
 
       </div>
