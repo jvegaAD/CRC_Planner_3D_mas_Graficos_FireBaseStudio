@@ -114,13 +114,22 @@ export default function Grid3D({ initialGrid }: { initialGrid?: number[][] }) {
             </tr>
           </thead>
           <tbody>
-            {tasks.map((task, rowIndex) => (
+            {tasks.map((task, rowIndex) => {
+              // Encuentra el primer día programado (cualquier estado excepto 0) para esta tarea
+              const firstScheduledDayIndex = grid[rowIndex].findIndex(status => status > 0);
+
+              return (
               <tr key={rowIndex}>
                 <td className="px-4 py-2 border font-medium bg-gray-50">
                   {task}
                 </td>
                 {days.map((_, colIndex) => {
-                  const locationNumber = colIndex + 1;
+                  let locationNumber: number | null = null;
+                   // Si la celda está programada y sabemos dónde empieza la tarea
+                  if (grid[rowIndex][colIndex] > 0 && firstScheduledDayIndex !== -1) {
+                      locationNumber = colIndex - firstScheduledDayIndex + 1;
+                  }
+
                   return (
                     <td key={colIndex} className="px-2 py-2 border">
                       <div
@@ -145,7 +154,7 @@ export default function Grid3D({ initialGrid }: { initialGrid?: number[][] }) {
                   );
                 })}
               </tr>
-            ))}
+            )})}
           </tbody>
         </table>
       </div>
