@@ -22,7 +22,8 @@ const tasks = [
   "Instalaciones",
 ];
 
-const days = ["Día 1", "Día 2", "Día 3", "Día 4", "Día 5"];
+const days = Array.from({ length: 20 }, (_, i) => `D${i + 1}`);
+const daysPerWeek = 4;
 
 // Blanco = 0, Verde = 1, Rojo = 2, Celeste = 3
 export default function Grid3D() {
@@ -87,10 +88,17 @@ export default function Grid3D() {
       <div className="overflow-x-auto">
         <table className="border-collapse">
           <thead>
+             <tr>
+              <th rowSpan={2} className="px-4 py-2 border bg-gray-200 align-bottom">Actividad</th>
+              {Array.from({ length: days.length / daysPerWeek }).map((_, weekIndex) => (
+                <th key={weekIndex} colSpan={daysPerWeek} className="px-4 py-2 border bg-gray-100 text-center">
+                  Semana {weekIndex + 1}
+                </th>
+              ))}
+            </tr>
             <tr>
-              <th className="px-4 py-2 border bg-gray-200">Actividad</th>
               {days.map((day, index) => (
-                <th key={index} className="px-4 py-2 border bg-gray-100">
+                <th key={index} className="px-4 py-2 border bg-gray-50 font-normal">
                   {day}
                 </th>
               ))}
