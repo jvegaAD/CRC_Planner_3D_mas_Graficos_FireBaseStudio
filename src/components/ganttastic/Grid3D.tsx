@@ -41,16 +41,23 @@ export default function Grid3D({ initialGrid, referenceGrid, days = defaultDays,
 
   const weeks = Array.from({ length: Math.ceil(days.length / daysPerWeek) }, (_, i) => `Semana ${i + 1}`);
   const controlDateIndex = controlDate ? days.indexOf(controlDate) : -1;
+  const controlWeekIndex = controlDateIndex !== -1 ? Math.floor(controlDateIndex / daysPerWeek) : -1;
+
+  // Determina si esta es la Gantt "Programada" basándose en la presencia de referenceGrid
+  const isProgramadaView = !!referenceGrid;
 
 
   const handleClick = (row: number, col: number) => {
-    setGrid((prev) =>
-      prev.map((r, i) =>
-        r.map((cell, j) =>
-          i === row && j === col ? (cell + 1) % 4 : cell
-        )
-      )
-    );
+    // Solo permite hacer clic si no es la vista proyectada (la que no tiene referenceGrid)
+    if (isProgramadaView) {
+        setGrid((prev) =>
+          prev.map((r, i) =>
+            r.map((cell, j) =>
+              i === row && j === col ? (cell + 1) % 4 : cell
+            )
+          )
+        );
+    }
   };
 
   const getColor = (state: number) => {
@@ -98,7 +105,7 @@ export default function Grid3D({ initialGrid, referenceGrid, days = defaultDays,
 
   // 📊 Dataset para la "Curva S" en %
   let runningTotal = 0;
-  const sCurveData = weeks.map((weekName, weekIndex) => {
+  let sCurveData = weeks.map((weekName, weekIndex) => {
     const startDay = weekIndex * daysPerWeek;
     const endDay = Math.min(startDay + daysPerWeek, days.length);
     let weeklyTotal = 0;
@@ -120,7 +127,7 @@ export default function Grid3D({ initialGrid, referenceGrid, days = defaultDays,
 
 
   // 📊 Dataset para el gráfico de líneas acumulado por tarea en %
-  const weeklyTaskAccumulatedData = weeks.map((weekName, weekIndex) => {
+  let weeklyTaskAccumulatedData = weeks.map((weekName, weekIndex) => {
     const weekEntry: { [key: string]: any } = { week: weekName };
 
     tasks.forEach((task, taskIndex) => {
@@ -140,6 +147,12 @@ export default function Grid3D({ initialGrid, referenceGrid, days = defaultDays,
     });
     return weekEntry;
   });
+
+  // Si es la vista "Programada" y hay una fecha de control, corta los datos de los gráficos de línea
+  if (isProgramadaView && controlWeekIndex !== -1) {
+    sCurveData = sCurveData.slice(0, controlWeekIndex + 1);
+    weeklyTaskAccumulatedData = weeklyTaskAccumulatedData.slice(0, controlWeekIndex + 1);
+  }
 
   // 📊 Dataset por tarea (horizontal)
   const taskData = tasks.map((task, rowIndex) => {
@@ -198,7 +211,8 @@ export default function Grid3D({ initialGrid, referenceGrid, days = defaultDays,
                       <div
                         onClick={() => handleClick(rowIndex, colIndex)}
                         className={cn(
-                          "w-12 h-12 cursor-pointer rounded-lg transition-all flex items-center justify-center font-bold text-lg",
+                          "w-12 h-12 rounded-lg transition-all flex items-center justify-center font-bold text-lg",
+                           isProgramadaView ? "cursor-pointer" : "cursor-default",
                           getColor(grid[rowIndex][colIndex])
                         )}
                         style={{
