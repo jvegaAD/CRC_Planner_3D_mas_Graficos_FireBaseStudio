@@ -5,6 +5,20 @@ import Grid3D from "@/components/ganttastic/Grid3D";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
+const tasks = [
+  "Fundaciones",
+  "Hormigón",
+  "Albañilería",
+  "Aislamiento",
+  "Instalaciones",
+];
+const days = Array.from({ length: 20 }, (_, i) => `D${i + 1}`);
+
+// Grilla proyectada con todo en estado "Completado" (3)
+const projectedGrid = tasks.map(() => days.map(() => 3));
+// Grilla semanal que inicia vacía (0)
+const weeklyGrid = tasks.map(() => days.map(() => 0));
+
 export default function Home() {
   const [view, setView] = useState<"proyectada" | "semanal">("proyectada");
 
@@ -28,12 +42,12 @@ export default function Home() {
 
         <div className={cn(view !== "proyectada" && "hidden")}>
            <h1 className="text-2xl font-bold mb-6 text-center">📊 Programa General Proyectado</h1>
-           <Grid3D />
+           <Grid3D initialGrid={projectedGrid} />
         </div>
 
         <div className={cn(view !== "semanal" && "hidden")}>
            <h1 className="text-2xl font-bold mb-6 text-center">📊 Programa General Semanal</h1>
-           <Grid3D />
+           <Grid3D initialGrid={weeklyGrid} />
         </div>
 
       </div>

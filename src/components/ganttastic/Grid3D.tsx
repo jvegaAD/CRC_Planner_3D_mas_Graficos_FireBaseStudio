@@ -28,9 +28,9 @@ const daysPerWeek = 4;
 const weeks = Array.from({ length: days.length / daysPerWeek }, (_, i) => `Semana ${i + 1}`);
 
 // Blanco = 0, Verde = 1, Rojo = 2, Celeste = 3
-export default function Grid3D() {
+export default function Grid3D({ initialGrid }: { initialGrid?: number[][] }) {
   const [grid, setGrid] = useState<number[][]>(
-    tasks.map(() => days.map(() => 0))
+    initialGrid || tasks.map(() => days.map(() => 0))
   );
 
   const handleClick = (row: number, col: number) => {
