@@ -157,7 +157,7 @@ export default function Grid3D() {
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={weeklyData}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="week" />
+              <XAxis dataKey="week" angle={-90} textAnchor="end" height={70} interval={0} tick={{ fontSize: 10 }} />
               <YAxis allowDecimals={false} />
               <Tooltip />
               <Legend />
@@ -176,7 +176,7 @@ export default function Grid3D() {
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={weeklyData}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="week" />
+              <XAxis dataKey="week" angle={-90} textAnchor="end" height={70} interval={0} tick={{ fontSize: 10 }} />
               <YAxis allowDecimals={false} />
               <Tooltip />
               <Legend />
