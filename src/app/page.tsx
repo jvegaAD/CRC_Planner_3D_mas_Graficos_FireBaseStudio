@@ -32,14 +32,17 @@ const generateWorkingDays = (startDate: Date, count: number): string[] => {
 
 const days = generateWorkingDays(new Date(2025, 8, 8), 40); // 8 de Septiembre
 const startDays = [1, 3, 6, 9, 12, 16]; // Días de inicio para cada tarea
+const taskDuration = 20; // Cada tarea dura 20 días laborables
 
-// Grilla proyectada con inicios diferidos y estado "Completado"
+// Grilla proyectada con duraciones fijas
 const projectedGrid = tasks.map((_, rowIndex) => {
   const startDayForTask = startDays[rowIndex];
   return days.map((_, colIndex) => {
     const currentDay = colIndex + 1;
+    // La tarea está activa si el día actual está entre su inicio y su duración de 20 días.
+    const isTaskActive = currentDay >= startDayForTask && currentDay < startDayForTask + taskDuration;
     // 3: Completado, 0: Vacío
-    return currentDay >= startDayForTask ? 3 : 0;
+    return isTaskActive ? 3 : 0;
   });
 });
 
