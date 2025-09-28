@@ -17,7 +17,7 @@ const tasks = [
 const days = Array.from({ length: 20 }, (_, i) => `D${i + 1}`);
 const startDays = [1, 3, 6, 9, 12, 16]; // Días de inicio para cada tarea
 
-// Grilla proyectada con inicios diferidos
+// Grilla proyectada con inicios diferidos y estado "Completado"
 const projectedGrid = tasks.map((_, rowIndex) => {
   const startDayForTask = startDays[rowIndex];
   return days.map((_, colIndex) => {
@@ -63,7 +63,7 @@ export default function Home() {
 
         <div className={cn(view !== "semanal" && "hidden")}>
            <h2 className="text-2xl font-bold mb-6 text-center">📊 Programa General Semanal</h2>
-           <Grid3D initialGrid={weeklyGrid} />
+           <Grid3D initialGrid={weeklyGrid} referenceGrid={projectedGrid} />
         </div>
 
       </div>

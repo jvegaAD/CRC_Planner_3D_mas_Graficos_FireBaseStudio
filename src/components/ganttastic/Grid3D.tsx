@@ -29,7 +29,7 @@ const daysPerWeek = 4;
 const weeks = Array.from({ length: days.length / daysPerWeek }, (_, i) => `Semana ${i + 1}`);
 
 // Blanco = 0, Verde = 1, Rojo = 2, Celeste = 3
-export default function Grid3D({ initialGrid }: { initialGrid?: number[][] }) {
+export default function Grid3D({ initialGrid, referenceGrid }: { initialGrid?: number[][], referenceGrid?: number[][] }) {
   const [grid, setGrid] = useState<number[][]>(
     initialGrid || tasks.map(() => days.map(() => 0))
   );
@@ -90,6 +90,8 @@ export default function Grid3D({ initialGrid }: { initialGrid?: number[][] }) {
     });
     return { tarea: task, programado: verde, atrasado: rojo, completado: celeste };
   });
+  
+  const gridForNumbering = referenceGrid || grid;
 
   return (
     <div className="w-full space-y-10">
@@ -115,8 +117,8 @@ export default function Grid3D({ initialGrid }: { initialGrid?: number[][] }) {
           </thead>
           <tbody>
             {tasks.map((task, rowIndex) => {
-              // Encuentra el primer día programado (cualquier estado excepto 0) para esta tarea
-              const firstScheduledDayIndex = grid[rowIndex].findIndex(status => status > 0);
+              // Encuentra el primer día programado en la cuadrícula de referencia para la numeración
+              const firstScheduledDayIndex = gridForNumbering[rowIndex].findIndex(status => status > 0);
 
               return (
               <tr key={rowIndex}>
@@ -125,8 +127,8 @@ export default function Grid3D({ initialGrid }: { initialGrid?: number[][] }) {
                 </td>
                 {days.map((_, colIndex) => {
                   let locationNumber: number | null = null;
-                   // Si la celda está programada y sabemos dónde empieza la tarea
-                  if (grid[rowIndex][colIndex] > 0 && firstScheduledDayIndex !== -1) {
+                   // Si la celda está programada (en la cuadrícula de referencia) y sabemos dónde empieza la tarea
+                  if (gridForNumbering[rowIndex][colIndex] > 0 && firstScheduledDayIndex !== -1) {
                       locationNumber = colIndex - firstScheduledDayIndex + 1;
                   }
 
