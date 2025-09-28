@@ -2,40 +2,38 @@ import { AlertTriangle, Check, Minus } from 'lucide-react';
 import type { ComponentType } from 'react';
 
 export const TASKS: string[] = [
-  'Foundation',
-  'Concrete Pour',
-  'Framing',
-  'Roofing',
-  'Plumbing & Electrical',
-  'Insulation',
-  'Drywall',
-  'Painting',
-  'Installations',
-  'Landscaping',
+  'Fundaciones',
+  'Hormigón',
+  'Albañilería',
+  'Aislamiento',
+  'Instalaciones',
+  'Pintura',
+  'Acabados',
+  'Paisajismo',
 ];
 
-export const DAYS: string[] = Array.from({ length: 20 }, (_, i) => `Day ${i + 1}`);
+export const DAYS: string[] = Array.from({ length: 15 }, (_, i) => `Día ${i + 1}`);
 
 export interface Status {
-  name: 'Not Started' | 'Completed' | 'Delayed';
+  name: 'Pendiente' | 'Completado' | 'Retrasado';
   colorClass: string;
   icon: ComponentType<{ className?: string }>;
 }
 
 export const STATUSES: Status[] = [
   {
-    name: 'Not Started',
-    colorClass: 'bg-white text-slate-500 border-gray-300 shadow-md',
+    name: 'Pendiente',
+    colorClass: 'bg-white text-slate-400',
     icon: Minus,
   },
   {
-    name: 'Completed',
-    colorClass: 'bg-green-500 text-white border-green-700 shadow-lg',
+    name: 'Completado',
+    colorClass: 'bg-green-500 text-white',
     icon: Check,
   },
   {
-    name: 'Delayed',
-    colorClass: 'bg-red-500 text-white border-red-700 shadow-lg',
+    name: 'Retrasado',
+    colorClass: 'bg-red-500 text-white',
     icon: AlertTriangle,
   },
 ];

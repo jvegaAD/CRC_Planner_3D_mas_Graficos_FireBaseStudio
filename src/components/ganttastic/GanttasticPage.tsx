@@ -21,7 +21,7 @@ const GanttasticPage = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gray-100 font-body text-foreground">
+    <div className="min-h-screen w-full bg-background font-body text-foreground">
       <div className="container mx-auto px-4 py-8">
         <header className="mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
