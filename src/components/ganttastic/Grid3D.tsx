@@ -302,12 +302,12 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
                   dataKey={`${task} (Comp.)`}
                   stroke={lineColors[index % lineColors.length]}
                   strokeWidth={3}
-                  name={`${task} (Completado)`}
+                  name={isProgramadaView ? `${task} (Completado)` : task}
                   dot={{ r: 4 }}
                   connectNulls
                 />
               ))}
-               {tasks.map((task, index) => (
+               {isProgramadaView && tasks.map((task, index) => (
                 <Line
                   key={`${task}-prog`}
                   type="monotone"
