@@ -14,9 +14,17 @@ const tasks = [
   "Cubierta",
 ];
 const days = Array.from({ length: 20 }, (_, i) => `D${i + 1}`);
+const startDays = [1, 3, 6, 9, 12, 16]; // Días de inicio para cada tarea
 
-// Grilla proyectada con todo en estado "Completado" (3)
-const projectedGrid = tasks.map(() => days.map(() => 3));
+// Grilla proyectada con inicios diferidos
+const projectedGrid = tasks.map((_, rowIndex) => {
+  const startDayForTask = startDays[rowIndex];
+  return days.map((_, colIndex) => {
+    const currentDay = colIndex + 1;
+    return currentDay >= startDayForTask ? 3 : 0; // 3: Completado, 0: Vacío
+  });
+});
+
 // Grilla semanal que inicia vacía (0)
 const weeklyGrid = tasks.map(() => days.map(() => 0));
 
