@@ -24,6 +24,7 @@ const tasks = [
 
 const days = Array.from({ length: 20 }, (_, i) => `D${i + 1}`);
 const daysPerWeek = 4;
+const weeks = Array.from({ length: days.length / daysPerWeek }, (_, i) => `Semana ${i + 1}`);
 
 // Blanco = 0, Verde = 1, Rojo = 2, Celeste = 3
 export default function Grid3D() {
@@ -54,16 +55,22 @@ export default function Grid3D() {
     }
   };
 
-  // 📊 Dataset por día (apiladas + acumulado)
-  const barData = days.map((_, colIndex) => {
+  // 📊 Dataset por semana (apiladas + acumulado)
+  const weeklyData = weeks.map((_, weekIndex) => {
     let verde = 0, rojo = 0, celeste = 0;
-    tasks.forEach((_, rowIndex) => {
-      if (grid[rowIndex][colIndex] === 1) verde++;
-      if (grid[rowIndex][colIndex] === 2) rojo++;
-      if (grid[rowIndex][colIndex] === 3) celeste++;
-    });
+    const startDay = weekIndex * daysPerWeek;
+    const endDay = startDay + daysPerWeek;
+    
+    for (let colIndex = startDay; colIndex < endDay; colIndex++) {
+      tasks.forEach((_, rowIndex) => {
+        if (grid[rowIndex][colIndex] === 1) verde++;
+        if (grid[rowIndex][colIndex] === 2) rojo++;
+        if (grid[rowIndex][colIndex] === 3) celeste++;
+      });
+    }
+
     return {
-      day: `D${colIndex + 1}`,
+      week: `Semana ${weekIndex + 1}`,
       programado: verde,
       atrasado: rojo,
       completado: celeste,
@@ -90,9 +97,9 @@ export default function Grid3D() {
           <thead>
             <tr>
               <th rowSpan={2} className="px-4 py-2 border bg-gray-200 align-bottom">Actividad</th>
-              {Array.from({ length: days.length / daysPerWeek }).map((_, weekIndex) => (
+              {weeks.map((week, weekIndex) => (
                 <th key={weekIndex} colSpan={daysPerWeek} className="px-4 py-2 border bg-gray-100 text-center">
-                  Semana {weekIndex + 1}
+                  {week}
                 </th>
               ))}
             </tr>
@@ -145,12 +152,12 @@ export default function Grid3D() {
         {/* 📊 Barras apiladas */}
         <div className="bg-white p-4 rounded-lg shadow-md flex-1 min-w-[400px]">
           <h2 className="text-lg font-semibold mb-4">
-            📊 Estado de Actividades por Día
+            📊 Estado de Actividades por Semana
           </h2>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={barData}>
+            <BarChart data={weeklyData}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="day" />
+              <XAxis dataKey="week" />
               <YAxis allowDecimals={false} />
               <Tooltip />
               <Legend />
@@ -164,12 +171,12 @@ export default function Grid3D() {
         {/* 📈 Línea acumulada por estado */}
         <div className="bg-white p-4 rounded-lg shadow-md flex-1 min-w-[400px]">
           <h2 className="text-lg font-semibold mb-4">
-            📈 Acumulado por Estado (día a día)
+            📈 Acumulado por Estado (semana a semana)
           </h2>
           <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={barData}>
+            <LineChart data={weeklyData}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="day" />
+              <XAxis dataKey="week" />
               <YAxis allowDecimals={false} />
               <Tooltip />
               <Legend />
