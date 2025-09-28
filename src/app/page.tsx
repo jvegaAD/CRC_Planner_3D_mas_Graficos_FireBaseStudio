@@ -30,7 +30,7 @@ const generateWorkingDays = (startDate: Date, count: number): string[] => {
 };
 
 
-const days = generateWorkingDays(new Date(2025, 8, 8), 40); // 8 de Septiembre
+const days = generateWorkingDays(new Date(2025, 8, 8), 35); // 8 de Septiembre, 35 días = 7 semanas
 const startDays = [1, 3, 6, 9, 12, 16]; // Días de inicio para cada tarea
 const taskDuration = 20; // Cada tarea dura 20 días laborables
 
