@@ -301,7 +301,7 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
                   type="monotone"
                   dataKey={`${task} (Comp.)`}
                   stroke={lineColors[index % lineColors.length]}
-                  strokeWidth={3}
+                  strokeWidth={isProgramadaView ? 3 : 2}
                   name={isProgramadaView ? `${task} (Completado)` : task}
                   dot={{ r: 4 }}
                   connectNulls
@@ -376,7 +376,7 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
                 type="monotone"
                 dataKey="completed"
                 stroke="#00008B" // azul oscuro
-                strokeWidth={3}
+                strokeWidth={isProgramadaView ? 3 : 2}
                 name={isProgramadaView ? "Progreso Real Completado" : "Progreso Proyectado"}
                 dot={{ r: 5 }}
                 connectNulls
