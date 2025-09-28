@@ -141,82 +141,84 @@ export default function Grid3D() {
         </table>
       </div>
 
-      {/* 📊 Barras apiladas */}
-      <div className="bg-white p-4 rounded-lg shadow-md">
-        <h2 className="text-lg font-semibold mb-4">
-          📊 Estado de Actividades por Día
-        </h2>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={barData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="day" />
-            <YAxis allowDecimals={false} />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="programado" stackId="a" fill="#22c55e" name="Programado" />
-            <Bar dataKey="atrasado" stackId="a" fill="#ef4444" name="Atrasado" />
-            <Bar dataKey="completado" stackId="a" fill="#06b6d4" name="Completado" />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+      <div className="flex flex-wrap gap-8 justify-center">
+        {/* 📊 Barras apiladas */}
+        <div className="bg-white p-4 rounded-lg shadow-md flex-1 min-w-[400px]">
+          <h2 className="text-lg font-semibold mb-4">
+            📊 Estado de Actividades por Día
+          </h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={barData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="day" />
+              <YAxis allowDecimals={false} />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="programado" stackId="a" fill="#22c55e" name="Programado" />
+              <Bar dataKey="atrasado" stackId="a" fill="#ef4444" name="Atrasado" />
+              <Bar dataKey="completado" stackId="a" fill="#06b6d4" name="Completado" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
 
-      {/* 📈 Línea acumulada por estado */}
-      <div className="bg-white p-4 rounded-lg shadow-md">
-        <h2 className="text-lg font-semibold mb-4">
-          📈 Acumulado por Estado (día a día)
-        </h2>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={barData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="day" />
-            <YAxis allowDecimals={false} />
-            <Tooltip />
-            <Legend />
-            <Line
-              type="monotone"
-              dataKey="programado"
-              stroke="#22c55e"
-              strokeWidth={3}
-              name="Programado"
-              dot={{ r: 5 }}
-            />
-            <Line
-              type="monotone"
-              dataKey="atrasado"
-              stroke="#ef4444"
-              strokeWidth={3}
-              name="Atrasado"
-              dot={{ r: 5 }}
-            />
-            <Line
-              type="monotone"
-              dataKey="completado"
-              stroke="#06b6d4"
-              strokeWidth={3}
-              name="Completado"
-              dot={{ r: 5 }}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+        {/* 📈 Línea acumulada por estado */}
+        <div className="bg-white p-4 rounded-lg shadow-md flex-1 min-w-[400px]">
+          <h2 className="text-lg font-semibold mb-4">
+            📈 Acumulado por Estado (día a día)
+          </h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={barData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="day" />
+              <YAxis allowDecimals={false} />
+              <Tooltip />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="programado"
+                stroke="#22c55e"
+                strokeWidth={3}
+                name="Programado"
+                dot={{ r: 5 }}
+              />
+              <Line
+                type="monotone"
+                dataKey="atrasado"
+                stroke="#ef4444"
+                strokeWidth={3}
+                name="Atrasado"
+                dot={{ r: 5 }}
+              />
+              <Line
+                type="monotone"
+                dataKey="completado"
+                stroke="#06b6d4"
+                strokeWidth={3}
+                name="Completado"
+                dot={{ r: 5 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
 
-      {/* 📊 Barras horizontales por tarea */}
-      <div className="bg-white p-4 rounded-lg shadow-md">
-        <h2 className="text-lg font-semibold mb-4">
-          📊 Estado por Tarea
-        </h2>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart layout="vertical" data={taskData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis type="number" allowDecimals={false} />
-            <YAxis type="category" dataKey="tarea" width={100} />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="programado" stackId="a" fill="#22c55e" name="Programado" />
-            <Bar dataKey="atrasado" stackId="a" fill="#ef4444" name="Atrasado" />
-            <Bar dataKey="completado" stackId="a" fill="#06b6d4" name="Completado" />
-          </BarChart>
-        </ResponsiveContainer>
+        {/* 📊 Barras horizontales por tarea */}
+        <div className="bg-white p-4 rounded-lg shadow-md flex-1 min-w-[400px]">
+          <h2 className="text-lg font-semibold mb-4">
+            📊 Estado por Tarea
+          </h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart layout="vertical" data={taskData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis type="number" allowDecimals={false} />
+              <YAxis type="category" dataKey="tarea" width={100} />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="programado" stackId="a" fill="#22c55e" name="Programado" />
+              <Bar dataKey="atrasado" stackId="a" fill="#ef4444" name="Atrasado" />
+              <Bar dataKey="completado" stackId="a" fill="#06b6d4" name="Completado" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </div>
   );
