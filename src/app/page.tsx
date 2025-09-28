@@ -1,6 +1,6 @@
 
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Grid3D from "@/components/ganttastic/Grid3D";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -47,11 +47,47 @@ const projectedGrid = tasks.map((_, rowIndex) => {
   });
 });
 
-// Grilla semanal que inicia vacía (0)
-const weeklyGrid = tasks.map(() => days.map(() => 0));
 
 export default function Home() {
   const [view, setView] = useState<"proyectada" | "semanal">("proyectada");
+  const [weeklyGrid, setWeeklyGrid] = useState<number[][]>(() => tasks.map(() => days.map(() => 0)));
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Cargar desde localStorage
+  useEffect(() => {
+    try {
+      const savedGrid = localStorage.getItem("ganttastic_weeklyGrid");
+      if (savedGrid) {
+        const parsedGrid = JSON.parse(savedGrid);
+        // Validar que la data guardada tiene la misma estructura
+        if (
+          parsedGrid.length === tasks.length &&
+          parsedGrid[0].length === days.length
+        ) {
+          setWeeklyGrid(parsedGrid);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to parse weeklyGrid from localStorage", error);
+    }
+    setIsLoaded(true);
+  }, []);
+
+  // Guardar en localStorage
+  useEffect(() => {
+    // No guardar hasta que se haya cargado desde el localStorage para evitar sobreescribir con el estado inicial
+    if (isLoaded) {
+      try {
+        localStorage.setItem("ganttastic_weeklyGrid", JSON.stringify(weeklyGrid));
+      } catch (error) {
+        console.error("Failed to save weeklyGrid to localStorage", error);
+      }
+    }
+  }, [weeklyGrid, isLoaded]);
+
+  const handleWeeklyGridChange = (newGrid: number[][]) => {
+    setWeeklyGrid(newGrid);
+  };
 
   return (
     <main className="p-6 bg-gray-100 min-h-screen flex flex-col items-center">
@@ -78,12 +114,18 @@ export default function Home() {
 
         <div className={cn(view !== "proyectada" && "hidden")}>
            <h2 className="text-2xl font-bold mb-6 text-center">📊 Programa General Proyectado</h2>
-           <Grid3D initialGrid={projectedGrid} days={days} controlDate={controlDate} />
+           <Grid3D grid={projectedGrid} days={days} controlDate={controlDate} />
         </div>
 
         <div className={cn(view !== "semanal" && "hidden")}>
            <h2 className="text-2xl font-bold mb-6 text-center">📊 Programa General Semanal</h2>
-           <Grid3D initialGrid={weeklyGrid} referenceGrid={projectedGrid} days={days} controlDate={controlDate} />
+           {isLoaded && <Grid3D 
+             grid={weeklyGrid}
+             onGridChange={handleWeeklyGridChange} 
+             referenceGrid={projectedGrid} 
+             days={days} 
+             controlDate={controlDate} 
+           />}
         </div>
 
       </div>

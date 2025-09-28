@@ -35,29 +35,25 @@ const lineColors = ["#8884d8", "#82ca9d", "#ffc658", "#ff8042", "#0088FE", "#00C
 
 
 // Blanco = 0, Verde = 1, Rojo = 2, Celeste = 3
-export default function Grid3D({ initialGrid, referenceGrid, days = defaultDays, controlDate }: { initialGrid?: number[][], referenceGrid?: number[][], days?: string[], controlDate?: string }) {
-  const [grid, setGrid] = useState<number[][]>(
-    initialGrid || tasks.map(() => days.map(() => 0))
-  );
-
+export default function Grid3D({ grid, onGridChange, referenceGrid, days = defaultDays, controlDate }: { grid: number[][], onGridChange?: (grid: number[][]) => void, referenceGrid?: number[][], days?: string[], controlDate?: string }) {
+  
   const weeks = Array.from({ length: Math.ceil(days.length / daysPerWeek) }, (_, i) => `Semana ${i + 1}`);
   const controlDateIndex = controlDate ? days.indexOf(controlDate) : -1;
   const controlWeekIndex = controlDateIndex !== -1 ? Math.floor(controlDateIndex / daysPerWeek) : -1;
 
-  // Determina si esta es la Gantt "Programada" basándose en la presencia de referenceGrid
-  const isProgramadaView = !!referenceGrid;
+  // Determina si esta es la Gantt "Programada" basándose en la presencia de onGridChange
+  const isProgramadaView = !!onGridChange;
 
 
   const handleClick = (row: number, col: number) => {
-    // Solo permite hacer clic si no es la vista proyectada (la que no tiene referenceGrid)
-    if (isProgramadaView) {
-        setGrid((prev) =>
-          prev.map((r, i) =>
+    // Solo permite hacer clic si no es la vista proyectada (la que no tiene onGridChange)
+    if (isProgramadaView && onGridChange) {
+        const newGrid = grid.map((r, i) =>
             r.map((cell, j) =>
               i === row && j === col ? (cell + 1) % 4 : cell
             )
-          )
-        );
+          );
+        onGridChange(newGrid);
     }
   };
 
@@ -470,5 +466,3 @@ export default function Grid3D({ initialGrid, referenceGrid, days = defaultDays,
     </div>
   );
 }
-
-    
