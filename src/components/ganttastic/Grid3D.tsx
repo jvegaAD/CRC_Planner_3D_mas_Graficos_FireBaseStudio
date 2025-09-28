@@ -88,7 +88,7 @@ export default function Grid3D() {
       <div className="overflow-x-auto">
         <table className="border-collapse">
           <thead>
-             <tr>
+            <tr>
               <th rowSpan={2} className="px-4 py-2 border bg-gray-200 align-bottom">Actividad</th>
               {Array.from({ length: days.length / daysPerWeek }).map((_, weekIndex) => (
                 <th key={weekIndex} colSpan={daysPerWeek} className="px-4 py-2 border bg-gray-100 text-center">
