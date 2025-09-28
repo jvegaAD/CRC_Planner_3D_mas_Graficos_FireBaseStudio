@@ -119,7 +119,7 @@ export default function Grid3D({ initialGrid }: { initialGrid?: number[][] }) {
                   {task}
                 </td>
                 {days.map((_, colIndex) => {
-                  const locationNumber = rowIndex * days.length + colIndex + 1;
+                  const locationNumber = colIndex + 1;
                   return (
                     <td key={colIndex} className="px-2 py-2 border">
                       <div
