@@ -50,12 +50,13 @@ export const GanttChart: FC<GanttChartProps> = ({
                       <div
                         onClick={() => onCellClick(taskIndex, dayIndex)}
                         className={cn(
-                          'w-12 h-12 cursor-pointer rounded-lg transform transition-all duration-200 ease-in-out hover:scale-105 active:scale-95 border',
+                          'w-12 h-12 cursor-pointer rounded-lg transform transition-all duration-200 ease-in-out hover:scale-105 active:scale-95',
                           status.colorClass
                         )}
                         style={{
-                          boxShadow: "2px 2px 6px rgba(0,0,0,0.3), inset 1px 1px 1px rgba(255,255,255,0.4)",
-                          textShadow: "0px 1px 1px rgba(0,0,0,0.2)"
+                          boxShadow: "0px 6px 0px rgba(0,0,0,0.25), 3px 6px 10px rgba(0,0,0,0.35)",
+                          marginBottom: "6px",
+                          border: "1px solid #ccc",
                         }}
                         title={`${task} - ${days[dayIndex]}: ${status.name}`}
                       >
