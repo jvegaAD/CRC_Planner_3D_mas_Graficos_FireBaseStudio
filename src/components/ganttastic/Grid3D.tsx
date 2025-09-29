@@ -108,33 +108,26 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
             week: weekName,
             totalProjected: 0,
             totalCompleted: 0,
-            totalScheduled: 0,
         };
 
         tasks.forEach((task, taskIndex) => {
             weekData[`task_${taskIndex}_projected`] = 0;
             weekData[`task_${taskIndex}_completed`] = 0;
-            weekData[`task_${taskIndex}_scheduled`] = 0;
         });
 
         for (let dayIndex = startDay; dayIndex < endDay; dayIndex++) {
             for (let taskIndex = 0; taskIndex < tasks.length; taskIndex++) {
-                const status = targetGrid[taskIndex]?.[dayIndex];
-                const refStatus = referenceGrid ? referenceGrid[taskIndex]?.[dayIndex] : status;
-
                 // Projected data from reference grid
-                if (refStatus > 0) {
+                if (referenceGrid && referenceGrid[taskIndex]?.[dayIndex] > 0) {
                     weekData.totalProjected++;
                     weekData[`task_${taskIndex}_projected`]++;
                 }
                 
                 // Actual data from target grid
-                if (status === 3) { // Completado (cian)
+                const status = targetGrid[taskIndex]?.[dayIndex];
+                if (status > 0) { // Any status > 0 is considered progress
                     weekData.totalCompleted++;
                     weekData[`task_${taskIndex}_completed`]++;
-                } else if (status === 1 || status === 2) { // Programado (verde) o Atrasado (rojo)
-                    weekData.totalScheduled++;
-                    weekData[`task_${taskIndex}_scheduled`]++;
                 }
             }
         }
@@ -144,32 +137,24 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
     // Now, calculate accumulated percentages
     let accTotalProjected = 0;
     let accTotalCompleted = 0;
-    let accTotalScheduled = 0;
     const accTaskProjected = Array(tasks.length).fill(0);
     const accTaskCompleted = Array(tasks.length).fill(0);
-    const accTaskScheduled = Array(tasks.length).fill(0);
 
     return weeklyTotals.map(weekData => {
         const result: { [key: string]: any } = { week: weekData.week };
 
         accTotalProjected += weekData.totalProjected;
         accTotalCompleted += weekData.totalCompleted;
-        accTotalScheduled += weekData.totalScheduled;
-
         result.projected = totalProjectWorkUnits > 0 ? (accTotalProjected / totalProjectWorkUnits) * 100 : 0;
         result.completed = totalProjectWorkUnits > 0 ? (accTotalCompleted / totalProjectWorkUnits) * 100 : 0;
-        // The "scheduled" value needs to be stacked on top of "completed" for the chart
-        result.scheduled = result.completed + (totalProjectWorkUnits > 0 ? (accTotalScheduled / totalProjectWorkUnits) * 100 : 0);
         
         tasks.forEach((task, taskIndex) => {
             accTaskProjected[taskIndex] += weekData[`task_${taskIndex}_projected`];
             accTaskCompleted[taskIndex] += weekData[`task_${taskIndex}_completed`];
-            accTaskScheduled[taskIndex] += weekData[`task_${taskIndex}_scheduled`];
             
             const totalUnitsForTask = totalTaskWorkUnits[taskIndex];
             result[`${task} (Proy.)`] = totalUnitsForTask > 0 ? (accTaskProjected[taskIndex] / totalUnitsForTask) * 100 : 0;
-            result[`${task} (Comp.)`] = totalUnitsForTask > 0 ? (accTaskCompleted[taskIndex] / totalUnitsForTask) * 100 : 0;
-            result[`${task} (Prog.)`] = result[`${task} (Comp.)`] + (totalUnitsForTask > 0 ? (accTaskScheduled[taskIndex] / totalUnitsForTask) * 100 : 0);
+            result[`${task} (Real)`] = totalUnitsForTask > 0 ? (accTaskCompleted[taskIndex] / totalUnitsForTask) * 100 : 0;
         });
 
         return result;
@@ -189,10 +174,8 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
           const futureWeekData = { ...chartData[i] };
           // Nullify real data for future weeks
           futureWeekData.completed = null;
-          futureWeekData.scheduled = null;
           tasks.forEach(task => {
-              futureWeekData[`${task} (Comp.)`] = null;
-              futureWeekData[`${task} (Prog.)`] = null;
+              futureWeekData[`${task} (Real)`] = null;
           });
           finalChartData.push(futureWeekData);
       }
@@ -211,10 +194,6 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
   });
 
   const percentageFormatter = (value: number) => value == null ? '' : `${value.toFixed(1)}%`;
-  
-  const hasProgramadoData = weeklyData.some(d => d.programado > 0);
-  const hasAtrasadoData = weeklyData.some(d => d.atrasado > 0);
-  const hasCompletadoData = weeklyData.some(d => d.completado > 0);
 
 
   return (
@@ -303,27 +282,13 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
               <Legend />
               {tasks.map((task, index) => (
                 <Line
-                  key={`${task}-comp`}
+                  key={`${task}-real`}
                   type="monotone"
-                  dataKey={`${task} (Comp.)`}
+                  dataKey={`${task} (Real)`}
                   stroke={lineColors[index % lineColors.length]}
-                  strokeWidth={2}
-                  name={isProgramadaView ? `${task} (Completado)` : task}
+                  strokeWidth={3}
+                  name={isProgramadaView ? `${task} (Real)` : task}
                   dot={{ r: 4 }}
-                  connectNulls
-                  strokeDasharray={isProgramadaView ? undefined : "3 3"}
-                />
-              ))}
-               {isProgramadaView && tasks.map((task, index) => (
-                <Line
-                  key={`${task}-prog`}
-                  type="monotone"
-                  dataKey={`${task} (Prog.)`}
-                  stroke={lineColors[index % lineColors.length]}
-                  strokeWidth={2}
-                  strokeDasharray="8 4"
-                  name={`${task} (Prog/Atras.)`}
-                  dot={false}
                   connectNulls
                 />
               ))}
@@ -361,38 +326,21 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
                {isProgramadaView && <Line
                 type="monotone"
                 dataKey="projected"
-                stroke="#FA8072" // salmón
+                stroke="#b1b1b1"
                 strokeWidth={2}
                 name="Progreso Proyectado"
                 strokeDasharray="3 3"
-                dot={{ r: 5 }}
-                connectNulls
-              />}
-              {isProgramadaView && <Line
-                type="monotone"
-                dataKey="scheduled"
-                stroke="#ff7300" // naranja
-                strokeWidth={2}
-                name="Progreso Prog./Atras."
-                strokeDasharray="8 4"
-                dot={false}
+                dot={{ r: 4 }}
                 connectNulls
               />}
               <Line
                 type="monotone"
                 dataKey="completed"
-                stroke="#00008B" // azul oscuro
-                strokeWidth={isProgramadaView ? 3 : 2}
-                name={isProgramadaView ? "Progreso Real Completado" : "Progreso Proyectado"}
+                stroke="#8884d8"
+                strokeWidth={3}
+                name={isProgramadaView ? "Progreso Real" : "Progreso Proyectado"}
                 dot={{ r: 5 }}
                 connectNulls
-                strokeDasharray={isProgramadaView ? undefined : "3 3"}
-                label={!isProgramadaView || isProgramadaView ? {
-                  position: 'top',
-                  formatter: percentageFormatter,
-                  fontSize: 10,
-                  offset: 5,
-                 } : undefined}
               />
             </ComposedChart>
           </ResponsiveContainer>
@@ -411,11 +359,11 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
               <YAxis allowDecimals={false} />
               <Tooltip />
               <Legend />
-              {hasProgramadoData && <Bar dataKey="programado" stackId="a" fill="#22c55e" name="Programado" />}
-              {hasAtrasadoData && <Bar dataKey="atrasado" stackId="a" fill="#ef4444" name="Atrasado" />}
-              {hasCompletadoData && <Bar dataKey="completado" stackId="a" fill="#06b6d4" name="Completado" >
+              <Bar dataKey="programado" stackId="a" fill="#22c55e" name="Programado" />
+              <Bar dataKey="atrasado" stackId="a" fill="#ef4444" name="Atrasado" />
+              <Bar dataKey="completado" stackId="a" fill="#06b6d4" name="Completado" >
                  <LabelList dataKey="total" position="top" />
-              </Bar>}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -432,32 +380,30 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
               <YAxis allowDecimals={false} />
               <Tooltip />
               <Legend />
-              {hasProgramadoData && !isProgramadaView && <Line
-                  type="monotone"
-                  dataKey="programado"
-                  stroke="#22c55e"
-                  strokeWidth={2}
-                  name="Programado"
-                  dot={{ r: 5 }}
-              />}
-              {hasAtrasadoData && !isProgramadaView && <Line
-                  type="monotone"
-                  dataKey="atrasado"
-                  stroke="#ef4444"
-                  strokeWidth={3}
-                  name="Atrasado"
-                  dot={{ r: 5 }}
-              />}
-              {hasCompletadoData && <Line
-                  type="monotone"
-                  dataKey="completado"
-                  stroke="#06b6d4"
-                  strokeWidth={2}
-                  name="Completado"
-                  dot={{ r: 5 }}
-                  strokeDasharray={isProgramadaView ? undefined : "3 3"}
-                  label={{ position: 'top', offset: 5, fontSize: 10 }}
-              />}
+              <Line
+                type="monotone"
+                dataKey="programado"
+                stroke="#22c55e"
+                strokeWidth={2}
+                name="Programado"
+                dot={{ r: 5 }}
+              />
+              <Line
+                type="monotone"
+                dataKey="atrasado"
+                stroke="#ef4444"
+                strokeWidth={3}
+                name="Atrasado"
+                dot={{ r: 5 }}
+              />
+              <Line
+                type="monotone"
+                dataKey="completado"
+                stroke="#06b6d4"
+                strokeWidth={2}
+                name="Completado"
+                dot={{ r: 5 }}
+              />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -474,9 +420,9 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
               <YAxis type="category" dataKey="tarea" width={100} />
               <Tooltip />
               <Legend />
-              {hasProgramadoData && <Bar dataKey="programado" stackId="a" fill="#22c55e" name="Programado" />}
-              {hasAtrasadoData && <Bar dataKey="atrasado" stackId="a" fill="#ef4444" name="Atrasado" />}
-              {hasCompletadoData && <Bar dataKey="completado" stackId="a" fill="#06b6d4" name="Completado" />}
+              <Bar dataKey="programado" stackId="a" fill="#22c55e" name="Programado" />
+              <Bar dataKey="atrasado" stackId="a" fill="#ef4444" name="Atrasado" />
+              <Bar dataKey="completado" stackId="a" fill="#06b6d4" name="Completado" />
             </BarChart>
           </ResponsiveContainer>
         </div>
