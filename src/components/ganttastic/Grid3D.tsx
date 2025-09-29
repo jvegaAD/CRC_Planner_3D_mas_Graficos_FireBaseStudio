@@ -154,7 +154,7 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
             
             const totalUnitsForTask = totalTaskWorkUnits[taskIndex];
             result[`${task} (Proy.)`] = totalUnitsForTask > 0 ? (accTaskProjected[taskIndex] / totalUnitsForTask) * 100 : 0;
-            result[`${task} (Real)`] = totalUnitsForTask > 0 ? (accTaskCompleted[taskIndex] / totalUnitsForTask) * 100 : 0;
+            result[`${task}`] = totalUnitsForTask > 0 ? (accTaskCompleted[taskIndex] / totalUnitsForTask) * 100 : 0;
         });
 
         return result;
@@ -175,7 +175,7 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
           // Nullify real data for future weeks
           futureWeekData.completed = null;
           tasks.forEach(task => {
-              futureWeekData[`${task} (Real)`] = null;
+              futureWeekData[`${task}`] = null;
           });
           finalChartData.push(futureWeekData);
       }
@@ -284,23 +284,10 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
                 <Line
                   key={`${task}-real`}
                   type="monotone"
-                  dataKey={`${task} (Real)`}
+                  dataKey={`${task}`}
                   stroke={lineColors[index % lineColors.length]}
                   strokeWidth={3}
-                  name={isProgramadaView ? `${task} (Real)` : task}
-                  dot={{ r: 4 }}
-                  connectNulls
-                />
-              ))}
-              {isProgramadaView && tasks.map((task, index) => (
-                <Line
-                  key={`${task}-proy`}
-                  type="monotone"
-                  dataKey={`${task} (Proy.)`}
-                  stroke={'#b1b1b1'}
-                  strokeWidth={2}
-                  name={`${task} (Proyectado)`}
-                  strokeDasharray="3 3"
+                  name={task}
                   dot={{ r: 4 }}
                   connectNulls
                 />
@@ -435,3 +422,4 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
     
 
     
+
