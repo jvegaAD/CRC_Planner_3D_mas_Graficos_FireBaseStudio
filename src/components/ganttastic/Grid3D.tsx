@@ -210,6 +210,11 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
   });
 
   const percentageFormatter = (value: number) => value == null ? '' : `${value.toFixed(1)}%`;
+  
+  const hasProgramadoData = weeklyData.some(d => d.programado > 0);
+  const hasAtrasadoData = weeklyData.some(d => d.atrasado > 0);
+  const hasCompletadoData = weeklyData.some(d => d.completado > 0);
+
 
   return (
     <div className="w-full space-y-10">
@@ -399,9 +404,9 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
               <YAxis allowDecimals={false} />
               <Tooltip />
               <Legend />
-              <Bar dataKey="programado" stackId="a" fill="#22c55e" name="Programado" />
-              <Bar dataKey="atrasado" stackId="a" fill="#ef4444" name="Atrasado" />
-              <Bar dataKey="completado" stackId="a" fill="#06b6d4" name="Completado" />
+              {hasProgramadoData && <Bar dataKey="programado" stackId="a" fill="#22c55e" name="Programado" />}
+              {hasAtrasadoData && <Bar dataKey="atrasado" stackId="a" fill="#ef4444" name="Atrasado" />}
+              {hasCompletadoData && <Bar dataKey="completado" stackId="a" fill="#06b6d4" name="Completado" />}
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -418,32 +423,34 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
               <YAxis allowDecimals={false} />
               <Tooltip />
               <Legend />
-              <Line
-                type="monotone"
-                dataKey="programado"
-                stroke="#22c55e"
-                strokeWidth={3}
-                name="Programado"
-                dot={{ r: 5 }}
-                strokeDasharray={isProgramadaView ? undefined : "3 3"}
-              />
-              {!isProgramadaView ? null : <Line
-                type="monotone"
-                dataKey="atrasado"
-                stroke="#ef4444"
-                strokeWidth={3}
-                name="Atrasado"
-                dot={{ r: 5 }}
+              {(!isProgramadaView || hasProgramadoData) && <Line
+                  type="monotone"
+                  dataKey="programado"
+                  stroke="#22c55e"
+                  strokeWidth={2}
+                  name="Programado"
+                  dot={{ r: 5 }}
+                  strokeDasharray={isProgramadaView ? undefined : "3 3"}
+                  style={{ display: !isProgramadaView && !hasProgramadoData ? 'none' : undefined }}
               />}
-              <Line
-                type="monotone"
-                dataKey="completado"
-                stroke="#06b6d4"
-                strokeWidth={3}
-                name="Completado"
-                dot={{ r: 5 }}
-                strokeDasharray={isProgramadaView ? undefined : "3 3"}
-              />
+              {(isProgramadaView && hasAtrasadoData) && <Line
+                  type="monotone"
+                  dataKey="atrasado"
+                  stroke="#ef4444"
+                  strokeWidth={3}
+                  name="Atrasado"
+                  dot={{ r: 5 }}
+              />}
+              {(!isProgramadaView || hasCompletadoData) && <Line
+                  type="monotone"
+                  dataKey="completado"
+                  stroke="#06b6d4"
+                  strokeWidth={2}
+                  name="Completado"
+                  dot={{ r: 5 }}
+                  strokeDasharray={isProgramadaView ? undefined : "3 3"}
+                  style={{ display: !isProgramadaView && !hasCompletadoData ? 'none' : undefined }}
+              />}
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -460,9 +467,9 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
               <YAxis type="category" dataKey="tarea" width={100} />
               <Tooltip />
               <Legend />
-              <Bar dataKey="programado" stackId="a" fill="#22c55e" name="Programado" />
-              <Bar dataKey="atrasado" stackId="a" fill="#ef4444" name="Atrasado" />
-              <Bar dataKey="completado" stackId="a" fill="#06b6d4" name="Completado" />
+              {hasProgramadoData && <Bar dataKey="programado" stackId="a" fill="#22c55e" name="Programado" />}
+              {hasAtrasadoData && <Bar dataKey="atrasado" stackId="a" fill="#ef4444" name="Atrasado" />}
+              {hasCompletadoData && <Bar dataKey="completado" stackId="a" fill="#06b6d4" name="Completado" />}
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -470,3 +477,5 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
     </div>
   );
 }
+
+    
