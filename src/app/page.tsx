@@ -49,7 +49,7 @@ const projectedGrid = tasks.map((_, rowIndex) => {
 
 
 export default function Home() {
-  const [view, setView] = useState<"proyectada" | "semanal">("proyectada");
+  const [view, setView] = useState<"proyectada" | "semanal">("semanal");
   const [weeklyGrid, setWeeklyGrid] = useState<number[][]>(() => tasks.map(() => days.map(() => 0)));
   const [isLoaded, setIsLoaded] = useState(false);
 
