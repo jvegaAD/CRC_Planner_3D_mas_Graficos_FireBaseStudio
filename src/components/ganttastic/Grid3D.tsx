@@ -281,96 +281,90 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
       </div>
 
       <div className="flex flex-col gap-8">
-        {/* Fila 1: Dos gráficos principales */}
-        <div className="flex flex-wrap gap-8 justify-center">
-            {/* 📈 Línea acumulada por tarea */}
-            <div className="bg-white p-4 rounded-lg shadow-md flex-1 min-w-[400px] lg:w-1/2">
-            <h2 className="text-lg font-semibold mb-4">
-                📈 % Acumulado Semanal por Tarea
-            </h2>
-            <ResponsiveContainer width="100%" height={300}>
-                <ComposedChart data={finalChartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="week" angle={-90} textAnchor="end" height={70} interval={0} tick={{ fontSize: 10 }} />
-                <YAxis domain={[0, 100]} tickFormatter={percentageFormatter}>
-                    <Label value="% Avance" angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} />
-                </YAxis>
-                <Tooltip formatter={percentageFormatter} />
-                <Legend />
+        {/* Fila 1 y 2: Gráficos principales apilados */}
+        <div className="bg-white p-4 rounded-lg shadow-md w-full">
+          <h2 className="text-lg font-semibold mb-4">
+            📈 % Acumulado Semanal por Tarea
+          </h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <ComposedChart data={finalChartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="week" angle={-90} textAnchor="end" height={70} interval={0} tick={{ fontSize: 10 }} />
+              <YAxis domain={[0, 100]} tickFormatter={percentageFormatter}>
+                <Label value="% Avance" angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} />
+              </YAxis>
+              <Tooltip formatter={percentageFormatter} />
+              <Legend />
 
-                {isProgramadaView && tasks.map((task, index) => (
-                    <Line
-                    key={`${task}-proy`}
-                    type="monotone"
-                    dataKey={`${task} (Proy.)`}
-                    stroke="#b1b1b1"
-                    strokeWidth={2}
-                    name={`${task} (Proy.)`}
-                    strokeDasharray="3 3"
-                    dot={{ r: 4 }}
-                    connectNulls
-                    />
-                ))}
-
-                {tasks.map((task, index) => (
-                    <Line
-                    key={`${task}-real`}
-                    type="monotone"
-                    dataKey={`${task}`}
-                    stroke={lineColors[index % lineColors.length]}
-                    strokeWidth={2}
-                    name={task}
-                    dot={{ r: 4 }}
-                    connectNulls
-                    strokeDasharray={isProgramadaView ? "1" : "3 3"}
-                    />
-                ))}
-                </ComposedChart>
-            </ResponsiveContainer>
-            </div>
-
-            {/* 📈 Curva S */}
-            <div className="bg-white p-4 rounded-lg shadow-md flex-1 min-w-[400px] lg:w-1/2">
-            <h2 className="text-lg font-semibold mb-4">
-                📈 Curva "S" - % Acumulado General del Proyecto
-            </h2>
-            <ResponsiveContainer width="100%" height={300}>
-                <ComposedChart data={finalChartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="week" angle={-90} textAnchor="end" height={70} interval={0} tick={{ fontSize: 10 }} />
-                <YAxis domain={[0, 100]} tickFormatter={percentageFormatter}>
-                    <Label value="% Avance" angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} />
-                </YAxis>
-                <Tooltip formatter={percentageFormatter} />
-                <Legend />
-                {isProgramadaView && <Line
-                    type="monotone"
-                    dataKey="projected"
-                    stroke="#b1b1b1"
-                    strokeWidth={2}
-                    name="Progreso Proyectado"
-                    strokeDasharray="3 3"
-                    dot={{ r: 4 }}
-                    connectNulls
-                />}
+              {isProgramadaView && tasks.map((task, index) => (
                 <Line
-                    type="monotone"
-                    dataKey="completed"
-                    stroke="#8884d8"
-                    strokeWidth={2}
-                    name={isProgramadaView ? "Progreso Real Completado" : "Progreso Proyectado"}
-                    dot={{ r: 5 }}
-                    connectNulls
-                    strokeDasharray={isProgramadaView ? "1" : "3 3"}
-                >
-                    <LabelList dataKey="completed" position="top" formatter={percentageFormatter} />
-                </Line>
-                </ComposedChart>
-            </ResponsiveContainer>
-            </div>
+                  key={`${task}-proy`}
+                  type="monotone"
+                  dataKey={`${task} (Proy.)`}
+                  stroke="#b1b1b1"
+                  strokeWidth={2}
+                  name={`${task} (Proy.)`}
+                  strokeDasharray="3 3"
+                  dot={{ r: 4 }}
+                  connectNulls
+                />
+              ))}
+
+              {tasks.map((task, index) => (
+                <Line
+                  key={`${task}-real`}
+                  type="monotone"
+                  dataKey={`${task}`}
+                  stroke={lineColors[index % lineColors.length]}
+                  strokeWidth={2}
+                  name={task}
+                  dot={{ r: 4 }}
+                  connectNulls
+                />
+              ))}
+            </ComposedChart>
+          </ResponsiveContainer>
         </div>
 
-        {/* Fila 2: Resto de los gráficos */}
+        <div className="bg-white p-4 rounded-lg shadow-md w-full">
+          <h2 className="text-lg font-semibold mb-4">
+            📈 Curva "S" - % Acumulado General del Proyecto
+          </h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <ComposedChart data={finalChartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="week" angle={-90} textAnchor="end" height={70} interval={0} tick={{ fontSize: 10 }} />
+              <YAxis domain={[0, 100]} tickFormatter={percentageFormatter}>
+                <Label value="% Avance" angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} />
+              </YAxis>
+              <Tooltip formatter={percentageFormatter} />
+              <Legend />
+              {isProgramadaView && <Line
+                type="monotone"
+                dataKey="projected"
+                stroke="#b1b1b1"
+                strokeWidth={2}
+                name="Progreso Proyectado"
+                strokeDasharray="3 3"
+                dot={{ r: 4 }}
+                connectNulls
+              />}
+              <Line
+                type="monotone"
+                dataKey="completed"
+                stroke="#8884d8"
+                strokeWidth={2}
+                name={isProgramadaView ? "Progreso Real Completado" : "Progreso Proyectado"}
+                dot={{ r: 5 }}
+                connectNulls
+              >
+                  <LabelList dataKey="completed" position="top" formatter={percentageFormatter} />
+              </Line>
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Fila 3: Resto de los gráficos */}
         <div className="flex flex-wrap gap-8 justify-center">
             {/* 📊 Barras apiladas */}
             <div className="bg-white p-4 rounded-lg shadow-md flex-1 min-w-[400px]">
@@ -428,7 +422,6 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
                     strokeWidth={2}
                     name="Completado"
                     dot={{ r: 5 }}
-                    strokeDasharray={isProgramadaView ? "1" : "3 3"}
                 >
                     <LabelList dataKey="completado" position="top" formatter={integerFormatter} />
                 </Line>}
