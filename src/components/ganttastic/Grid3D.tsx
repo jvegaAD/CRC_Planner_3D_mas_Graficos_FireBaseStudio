@@ -280,188 +280,182 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
         </table>
       </div>
 
-      <div className="flex flex-wrap gap-8 justify-center">
-        {/* 📈 Línea acumulada por tarea */}
-        <div className="bg-white p-4 rounded-lg shadow-md flex-1 min-w-[400px]">
-          <h2 className="text-lg font-semibold mb-4">
-            📈 % Acumulado Semanal por Tarea
-          </h2>
-          <ResponsiveContainer width="100%" height={300}>
-            <ComposedChart data={finalChartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="week" angle={-90} textAnchor="end" height={70} interval={0} tick={{ fontSize: 10 }} />
-              <YAxis domain={[0, 100]} tickFormatter={percentageFormatter}>
-                 <Label value="% Avance" angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} />
-              </YAxis>
-              <Tooltip formatter={percentageFormatter} />
-              <Legend />
+      <div className="flex flex-col gap-8">
+        {/* Fila 1: Dos gráficos principales */}
+        <div className="flex flex-wrap gap-8 justify-center">
+            {/* 📈 Línea acumulada por tarea */}
+            <div className="bg-white p-4 rounded-lg shadow-md flex-1 min-w-[400px] lg:w-1/2">
+            <h2 className="text-lg font-semibold mb-4">
+                📈 % Acumulado Semanal por Tarea
+            </h2>
+            <ResponsiveContainer width="100%" height={300}>
+                <ComposedChart data={finalChartData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="week" angle={-90} textAnchor="end" height={70} interval={0} tick={{ fontSize: 10 }} />
+                <YAxis domain={[0, 100]} tickFormatter={percentageFormatter}>
+                    <Label value="% Avance" angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} />
+                </YAxis>
+                <Tooltip formatter={percentageFormatter} />
+                <Legend />
 
-              {isProgramadaView && tasks.map((task, index) => (
+                {isProgramadaView && tasks.map((task, index) => (
+                    <Line
+                    key={`${task}-proy`}
+                    type="monotone"
+                    dataKey={`${task} (Proy.)`}
+                    stroke="#b1b1b1"
+                    strokeWidth={2}
+                    name={`${task} (Proy.)`}
+                    strokeDasharray="3 3"
+                    dot={{ r: 4 }}
+                    connectNulls
+                    />
+                ))}
+
+                {tasks.map((task, index) => (
+                    <Line
+                    key={`${task}-real`}
+                    type="monotone"
+                    dataKey={`${task}`}
+                    stroke={lineColors[index % lineColors.length]}
+                    strokeWidth={2}
+                    name={task}
+                    dot={{ r: 4 }}
+                    connectNulls
+                    strokeDasharray={isProgramadaView ? "1" : "3 3"}
+                    />
+                ))}
+                </ComposedChart>
+            </ResponsiveContainer>
+            </div>
+
+            {/* 📈 Curva S */}
+            <div className="bg-white p-4 rounded-lg shadow-md flex-1 min-w-[400px] lg:w-1/2">
+            <h2 className="text-lg font-semibold mb-4">
+                📈 Curva "S" - % Acumulado General del Proyecto
+            </h2>
+            <ResponsiveContainer width="100%" height={300}>
+                <ComposedChart data={finalChartData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="week" angle={-90} textAnchor="end" height={70} interval={0} tick={{ fontSize: 10 }} />
+                <YAxis domain={[0, 100]} tickFormatter={percentageFormatter}>
+                    <Label value="% Avance" angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} />
+                </YAxis>
+                <Tooltip formatter={percentageFormatter} />
+                <Legend />
+                {isProgramadaView && <Line
+                    type="monotone"
+                    dataKey="projected"
+                    stroke="#b1b1b1"
+                    strokeWidth={2}
+                    name="Progreso Proyectado"
+                    strokeDasharray="3 3"
+                    dot={{ r: 4 }}
+                    connectNulls
+                />}
                 <Line
-                  key={`${task}-proy`}
-                  type="monotone"
-                  dataKey={`${task} (Proy.)`}
-                  stroke="#b1b1b1"
-                  strokeWidth={2}
-                  name={`${task} (Proy.)`}
-                  strokeDasharray="3 3"
-                  dot={{ r: 4 }}
-                  connectNulls
-                />
-              ))}
-
-              {tasks.map((task, index) => (
-                <Line
-                  key={`${task}-real`}
-                  type="monotone"
-                  dataKey={`${task}`}
-                  stroke={lineColors[index % lineColors.length]}
-                  strokeWidth={isProgramadaView ? 3 : 2}
-                  name={task}
-                  dot={{ r: 4 }}
-                  connectNulls
-                  strokeDasharray={isProgramadaView ? "1" : "3 3"}
-                />
-              ))}
-            </ComposedChart>
-          </ResponsiveContainer>
+                    type="monotone"
+                    dataKey="completed"
+                    stroke="#8884d8"
+                    strokeWidth={2}
+                    name={isProgramadaView ? "Progreso Real Completado" : "Progreso Proyectado"}
+                    dot={{ r: 5 }}
+                    connectNulls
+                    strokeDasharray={isProgramadaView ? "1" : "3 3"}
+                >
+                    <LabelList dataKey="completed" position="top" formatter={percentageFormatter} />
+                </Line>
+                </ComposedChart>
+            </ResponsiveContainer>
+            </div>
         </div>
 
-        {/* 📈 Curva S */}
-        <div className="bg-white p-4 rounded-lg shadow-md flex-1 min-w-[400px]">
-          <h2 className="text-lg font-semibold mb-4">
-            📈 Curva "S" - % Acumulado General del Proyecto
-          </h2>
-          <ResponsiveContainer width="100%" height={300}>
-            <ComposedChart data={finalChartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="week" angle={-90} textAnchor="end" height={70} interval={0} tick={{ fontSize: 10 }} />
-              <YAxis domain={[0, 100]} tickFormatter={percentageFormatter}>
-                <Label value="% Avance" angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} />
-              </YAxis>
-              <Tooltip formatter={percentageFormatter} />
-              <Legend />
-               {isProgramadaView && <Line
-                type="monotone"
-                dataKey="projected"
-                stroke="#b1b1b1"
-                strokeWidth={2}
-                name="Progreso Proyectado"
-                strokeDasharray="3 3"
-                dot={{ r: 4 }}
-                connectNulls
-              />}
-              <Line
-                type="monotone"
-                dataKey="completed"
-                stroke="#8884d8"
-                strokeWidth={isProgramadaView ? 3 : 2}
-                name={isProgramadaView ? "Progreso Real Completado" : "Progreso Proyectado"}
-                dot={{ r: 5 }}
-                connectNulls
-                strokeDasharray={isProgramadaView ? "1" : "3 3"}
-              >
-                 <LabelList dataKey="completed" position="top" formatter={percentageFormatter} />
-              </Line>
-            </ComposedChart>
-          </ResponsiveContainer>
-        </div>
+        {/* Fila 2: Resto de los gráficos */}
+        <div className="flex flex-wrap gap-8 justify-center">
+            {/* 📊 Barras apiladas */}
+            <div className="bg-white p-4 rounded-lg shadow-md flex-1 min-w-[400px]">
+            <h2 className="text-lg font-semibold mb-4">
+                📊 Estado de Actividades por Semana
+            </h2>
+            <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={weeklyData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="week" angle={-90} textAnchor="end" height={70} interval={0} tick={{ fontSize: 10 }} />
+                <YAxis allowDecimals={false} />
+                <Tooltip />
+                <Legend />
+                {hasProgramadoData && <Bar dataKey="programado" stackId="a" fill="#22c55e" name="Programado" />}
+                {hasAtrasadoData && <Bar dataKey="atrasado" stackId="a" fill="#ef4444" name="Atrasado" />}
+                {hasCompletadoData && <Bar dataKey="completado" stackId="a" fill="#06b6d4" name="Completado" >
+                    <LabelList dataKey="total" position="top" formatter={integerFormatter} />
+                </Bar>}
+                </BarChart>
+            </ResponsiveContainer>
+            </div>
 
+            {/* 📈 Línea acumulada por estado */}
+            <div className="bg-white p-4 rounded-lg shadow-md flex-1 min-w-[400px]">
+            <h2 className="text-lg font-semibold mb-4">
+                📈 Acumulado por Estado (semana a semana)
+            </h2>
+            <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={weeklyData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="week" angle={-90} textAnchor="end" height={70} interval={0} tick={{ fontSize: 10 }} />
+                <YAxis allowDecimals={false} />
+                <Tooltip />
+                <Legend />
+                {isProgramadaView && hasProgramadoData && <Line
+                    type="monotone"
+                    dataKey="programado"
+                    stroke="#22c55e"
+                    strokeWidth={2}
+                    name="Programado"
+                    dot={{ r: 5 }}
+                />}
+                {isProgramadaView && hasAtrasadoData && <Line
+                    type="monotone"
+                    dataKey="atrasado"
+                    stroke="#ef4444"
+                    strokeWidth={3}
+                    name="Atrasado"
+                    dot={{ r: 5 }}
+                />}
+                {hasCompletadoData && <Line
+                    type="monotone"
+                    dataKey="completado"
+                    stroke="#06b6d4"
+                    strokeWidth={2}
+                    name="Completado"
+                    dot={{ r: 5 }}
+                    strokeDasharray={isProgramadaView ? "1" : "3 3"}
+                >
+                    <LabelList dataKey="completado" position="top" formatter={integerFormatter} />
+                </Line>}
+                </LineChart>
+            </ResponsiveContainer>
+            </div>
 
-        {/* 📊 Barras apiladas */}
-        <div className="bg-white p-4 rounded-lg shadow-md flex-1 min-w-[400px]">
-          <h2 className="text-lg font-semibold mb-4">
-            📊 Estado de Actividades por Semana
-          </h2>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={weeklyData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="week" angle={-90} textAnchor="end" height={70} interval={0} tick={{ fontSize: 10 }} />
-              <YAxis allowDecimals={false} />
-              <Tooltip />
-              <Legend />
-              {hasProgramadoData && <Bar dataKey="programado" stackId="a" fill="#22c55e" name="Programado" />}
-              {hasAtrasadoData && <Bar dataKey="atrasado" stackId="a" fill="#ef4444" name="Atrasado" />}
-              {hasCompletadoData && <Bar dataKey="completado" stackId="a" fill="#06b6d4" name="Completado" >
-                 <LabelList dataKey="total" position="top" formatter={integerFormatter} />
-              </Bar>}
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* 📈 Línea acumulada por estado */}
-        <div className="bg-white p-4 rounded-lg shadow-md flex-1 min-w-[400px]">
-          <h2 className="text-lg font-semibold mb-4">
-            📈 Acumulado por Estado (semana a semana)
-          </h2>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={weeklyData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="week" angle={-90} textAnchor="end" height={70} interval={0} tick={{ fontSize: 10 }} />
-              <YAxis allowDecimals={false} />
-              <Tooltip />
-              <Legend />
-              {hasProgramadoData && <Line
-                type="monotone"
-                dataKey="programado"
-                stroke="#22c55e"
-                strokeWidth={2}
-                name="Programado"
-                dot={{ r: 5 }}
-                strokeDasharray={isProgramadaView ? "1" : "3 3"}
-              />}
-              {hasAtrasadoData && <Line
-                type="monotone"
-                dataKey="atrasado"
-                stroke="#ef4444"
-                strokeWidth={3}
-                name="Atrasado"
-                dot={{ r: 5 }}
-                strokeDasharray={isProgramadaView ? "1" : "3 3"}
-              />}
-              {hasCompletadoData && <Line
-                type="monotone"
-                dataKey="completado"
-                stroke="#06b6d4"
-                strokeWidth={2}
-                name="Completado"
-                dot={{ r: 5 }}
-                strokeDasharray={isProgramadaView ? "1" : "3 3"}
-              >
-                <LabelList dataKey="completado" position="top" formatter={integerFormatter} />
-              </Line>}
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* 📊 Barras horizontales por tarea */}
-        <div className="bg-white p-4 rounded-lg shadow-md flex-1 min-w-[400px]">
-          <h2 className="text-lg font-semibold mb-4">
-            📊 Estado por Tarea
-          </h2>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart layout="vertical" data={taskData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis type="number" allowDecimals={false} />
-              <YAxis type="category" dataKey="tarea" width={100} />
-              <Tooltip />
-              <Legend />
-              {hasProgramadoData && <Bar dataKey="programado" stackId="a" fill="#22c55e" name="Programado" />}
-              {hasAtrasadoData && <Bar dataKey="atrasado" stackId="a" fill="#ef4444" name="Atrasado" />}
-              {hasCompletadoData && <Bar dataKey="completado" stackId="a" fill="#06b6d4" name="Completado" />}
-            </BarChart>
-          </ResponsiveContainer>
+            {/* 📊 Barras horizontales por tarea */}
+            <div className="bg-white p-4 rounded-lg shadow-md flex-1 min-w-[400px]">
+            <h2 className="text-lg font-semibold mb-4">
+                📊 Estado por Tarea
+            </h2>
+            <ResponsiveContainer width="100%" height={300}>
+                <BarChart layout="vertical" data={taskData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis type="number" allowDecimals={false} />
+                <YAxis type="category" dataKey="tarea" width={100} />
+                <Tooltip />
+                <Legend />
+                {hasProgramadoData && <Bar dataKey="programado" stackId="a" fill="#22c55e" name="Programado" />}
+                {hasAtrasadoData && <Bar dataKey="atrasado" stackId="a" fill="#ef4444" name="Atrasado" />}
+                {hasCompletadoData && <Bar dataKey="completado" stackId="a" fill="#06b6d4" name="Completado" />}
+                </BarChart>
+            </ResponsiveContainer>
+            </div>
         </div>
       </div>
     </div>
   );
 }
-
-    
-    
-
-    
-
-
-
-
