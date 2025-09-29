@@ -348,12 +348,14 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
                 strokeDasharray="3 3"
                 dot={{ r: 4 }}
                 connectNulls
-              />}
+              >
+                  <LabelList dataKey="projected" position="bottom" formatter={percentageFormatter} className="text-xs" />
+              </Line>}
               <Line
                 type="monotone"
                 dataKey="completed"
                 stroke="#8884d8"
-                strokeWidth={2}
+                strokeWidth={3}
                 name={isProgramadaView ? "Progreso Real Completado" : "Progreso Proyectado"}
                 dot={{ r: 5 }}
                 connectNulls
