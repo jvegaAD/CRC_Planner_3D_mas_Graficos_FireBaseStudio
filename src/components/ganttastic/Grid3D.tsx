@@ -362,7 +362,7 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
                 dot={{ r: 5 }}
                 connectNulls
               />}
-              <Line
+              {isProgramadaView && <Line
                 type="monotone"
                 dataKey="scheduled"
                 stroke="#ff7300" // naranja
@@ -371,7 +371,7 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
                 strokeDasharray="8 4"
                 dot={false}
                 connectNulls
-              />
+              />}
               <Line
                 type="monotone"
                 dataKey="completed"
@@ -425,15 +425,16 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
                 strokeWidth={3}
                 name="Programado"
                 dot={{ r: 5 }}
+                strokeDasharray={isProgramadaView ? undefined : "3 3"}
               />
-              <Line
+              {!isProgramadaView ? null : <Line
                 type="monotone"
                 dataKey="atrasado"
                 stroke="#ef4444"
                 strokeWidth={3}
                 name="Atrasado"
                 dot={{ r: 5 }}
-              />
+              />}
               <Line
                 type="monotone"
                 dataKey="completado"
@@ -441,6 +442,7 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
                 strokeWidth={3}
                 name="Completado"
                 dot={{ r: 5 }}
+                strokeDasharray={isProgramadaView ? undefined : "3 3"}
               />
             </LineChart>
           </ResponsiveContainer>
