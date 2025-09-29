@@ -361,7 +361,8 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
                 connectNulls
                 strokeDasharray={isProgramadaView ? "1" : "3 3"}
               >
-                 <LabelList dataKey="completed" position="top" formatter={percentageFormatter} />
+                 {!isProgramadaView && <LabelList dataKey="completed" position="top" formatter={percentageFormatter} />}
+                 {isProgramadaView && <LabelList dataKey="completed" position="top" formatter={percentageFormatter} />}
               </Line>
             </ComposedChart>
           </ResponsiveContainer>
@@ -461,5 +462,6 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
     
 
     
+
 
 
