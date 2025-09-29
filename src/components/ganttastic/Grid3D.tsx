@@ -15,6 +15,7 @@ import {
   Line,
   Label,
   ComposedChart,
+  LabelList,
 } from "recharts";
 
 const tasks = [
@@ -386,6 +387,12 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
                 dot={{ r: 5 }}
                 connectNulls
                 strokeDasharray={isProgramadaView ? undefined : "3 3"}
+                label={!isProgramadaView ? {
+                  position: 'top',
+                  formatter: percentageFormatter,
+                  fontSize: 10,
+                  offset: 5,
+                 } : undefined}
               />
             </ComposedChart>
           </ResponsiveContainer>
@@ -406,7 +413,9 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
               <Legend />
               {hasProgramadoData && <Bar dataKey="programado" stackId="a" fill="#22c55e" name="Programado" />}
               {hasAtrasadoData && <Bar dataKey="atrasado" stackId="a" fill="#ef4444" name="Atrasado" />}
-              {hasCompletadoData && <Bar dataKey="completado" stackId="a" fill="#06b6d4" name="Completado" />}
+              {hasCompletadoData && <Bar dataKey="completado" stackId="a" fill="#06b6d4" name="Completado" >
+                 {!isProgramadaView && <LabelList dataKey="completado" position="top" />}
+              </Bar>}
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -423,7 +432,7 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
               <YAxis allowDecimals={false} />
               <Tooltip />
               <Legend />
-              {hasProgramadoData && <Line
+              {hasProgramadoData && !isProgramadaView && <Line
                   type="monotone"
                   dataKey="programado"
                   stroke="#22c55e"
@@ -431,7 +440,7 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
                   name="Programado"
                   dot={{ r: 5 }}
               />}
-              {hasAtrasadoData && <Line
+              {hasAtrasadoData && !isProgramadaView && <Line
                   type="monotone"
                   dataKey="atrasado"
                   stroke="#ef4444"
@@ -447,6 +456,7 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
                   name="Completado"
                   dot={{ r: 5 }}
                   strokeDasharray={isProgramadaView ? undefined : "3 3"}
+                  label={!isProgramadaView ? { position: 'top', offset: 5, fontSize: 10 } : undefined}
               />}
             </LineChart>
           </ResponsiveContainer>
