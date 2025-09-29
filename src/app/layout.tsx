@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster"
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Ganttastic',
+  title: 'CRC_Planner_3D_mas_Graficos_FireBaseStudio',
   description: 'An interactive Gantt chart to visualize your project timeline.',
 };
 

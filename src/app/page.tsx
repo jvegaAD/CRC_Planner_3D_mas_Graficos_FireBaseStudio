@@ -93,7 +93,7 @@ export default function Home() {
     <main className="p-6 bg-gray-100 min-h-screen flex flex-col items-center">
       <div className="w-full max-w-7xl">
         <header className="mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <h1 className="text-4xl font-bold">Ganttastic</h1>
+            <h1 className="text-4xl font-bold">CRC_Planner_3D_mas_Graficos_FireBaseStudio</h1>
             <SharePointIntegrationHelper />
         </header>
 
