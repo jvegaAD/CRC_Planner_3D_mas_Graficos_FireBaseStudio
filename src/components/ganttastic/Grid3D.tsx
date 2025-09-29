@@ -387,7 +387,7 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
                 dot={{ r: 5 }}
                 connectNulls
                 strokeDasharray={isProgramadaView ? undefined : "3 3"}
-                label={!isProgramadaView ? {
+                label={!isProgramadaView || isProgramadaView ? {
                   position: 'top',
                   formatter: percentageFormatter,
                   fontSize: 10,
@@ -414,7 +414,7 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
               {hasProgramadoData && <Bar dataKey="programado" stackId="a" fill="#22c55e" name="Programado" />}
               {hasAtrasadoData && <Bar dataKey="atrasado" stackId="a" fill="#ef4444" name="Atrasado" />}
               {hasCompletadoData && <Bar dataKey="completado" stackId="a" fill="#06b6d4" name="Completado" >
-                 {!isProgramadaView && <LabelList dataKey="completado" position="top" />}
+                 <LabelList dataKey="total" position="top" />
               </Bar>}
             </BarChart>
           </ResponsiveContainer>
@@ -456,7 +456,7 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
                   name="Completado"
                   dot={{ r: 5 }}
                   strokeDasharray={isProgramadaView ? undefined : "3 3"}
-                  label={!isProgramadaView ? { position: 'top', offset: 5, fontSize: 10 } : undefined}
+                  label={{ position: 'top', offset: 5, fontSize: 10 }}
               />}
             </LineChart>
           </ResponsiveContainer>
@@ -486,4 +486,6 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
 }
 
     
+    
+
     
