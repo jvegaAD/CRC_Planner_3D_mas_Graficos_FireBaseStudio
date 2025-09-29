@@ -423,17 +423,15 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
               <YAxis allowDecimals={false} />
               <Tooltip />
               <Legend />
-              {(!isProgramadaView || hasProgramadoData) && <Line
+              {hasProgramadoData && <Line
                   type="monotone"
                   dataKey="programado"
                   stroke="#22c55e"
                   strokeWidth={2}
                   name="Programado"
                   dot={{ r: 5 }}
-                  strokeDasharray={isProgramadaView ? undefined : "3 3"}
-                  style={{ display: !isProgramadaView && !hasProgramadoData ? 'none' : undefined }}
               />}
-              {(isProgramadaView && hasAtrasadoData) && <Line
+              {hasAtrasadoData && <Line
                   type="monotone"
                   dataKey="atrasado"
                   stroke="#ef4444"
@@ -441,7 +439,7 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
                   name="Atrasado"
                   dot={{ r: 5 }}
               />}
-              {(!isProgramadaView || hasCompletadoData) && <Line
+              {hasCompletadoData && <Line
                   type="monotone"
                   dataKey="completado"
                   stroke="#06b6d4"
@@ -449,7 +447,6 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
                   name="Completado"
                   dot={{ r: 5 }}
                   strokeDasharray={isProgramadaView ? undefined : "3 3"}
-                  style={{ display: !isProgramadaView && !hasCompletadoData ? 'none' : undefined }}
               />}
             </LineChart>
           </ResponsiveContainer>
@@ -478,4 +475,5 @@ export default function Grid3D({ grid, onGridChange, referenceGrid, days = defau
   );
 }
 
+    
     
